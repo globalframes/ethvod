@@ -98,8 +98,8 @@ function Comp ({ onPaymentOK }) {
       <span>
         <a href='https://app.superfluid.finance/dashboard' target='_blank'>
           Visit your Superfluid dashboard
-        </a>
         <img src={superfluid} width={'30px'} style={{ placeSelf: 'center' }} />
+        </a>
       </span>
       <br />
       <Link

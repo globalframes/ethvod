@@ -102,7 +102,7 @@ function Login ({ onLoggedin }) {
                 <h1 className='title has-text-white is-2'>globalframes</h1>
                 <br />
                 <h2 className='subtitle  has-text-white is-4'>
-                  This website uses Ethereum - you will be asked to sign a
+                  This website uses Ethereum for logging in <br/> you will be asked to sign a
                   message for authentication next.
                 </h2>
 
