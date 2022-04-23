@@ -11,6 +11,7 @@ function Comp({ }) {
 
     const [ready, setReady] = useState(false);
     const [videoList, setVideoList] = useState();
+    const [streamList, setStreamList] = useState();
 
     const [description, setDescription] = useState();
     const [currentAccount, setCurrentAccount] = useState();
@@ -57,11 +58,19 @@ function Comp({ }) {
         loadData();
     }, []);
 
-
     const getVideoList = async (account) => {
-        const res = await axios.get(`http://localhost:9999/list/${account}`);
+        debugger;
+        axios.get(`http://localhost:9999/list/${account}`).then((res) => {
+            setVideoList(res.data);
+        });
 
-        setVideoList(res.data);
+        axios.get(`http://localhost:9999/streams`).then((res) => {
+            setStreamList(res.data);
+        });
+
+
+
+
         // setVideoList([])
     }
 
@@ -77,7 +86,7 @@ function Comp({ }) {
 
 
 
-    const BigVid = ({video}) => {
+    const BigVid = ({ video }) => {
 
         const videoJsOptions = {
             autoplay: false,
@@ -123,6 +132,29 @@ function Comp({ }) {
     }
 
 
+    const BigStream = ({ stream }) => {
+
+        const videoJsOptions = {
+            autoplay: false,
+            controls: true,
+            responsive: true,
+            fluid: true,
+            sources: [{
+                src: stream.downloadUrl,
+                type: 'video/mp4'
+            }]
+        };
+
+        return (
+            <>
+                <h1>Stream</h1>
+                <div>Title: {stream.title}</div>
+                <VideoJS options={videoJsOptions} />
+            </>
+        )
+    }
+
+
     if (ready && videoList) {
 
         const vids = videoList.map((video, i) => {
@@ -131,13 +163,21 @@ function Comp({ }) {
             } else {
                 return (<SmallVid key={`vid_${i}`} video={video} />)
             }
-
         })
 
+        const streams = streamList.map((stream, i) => {
+            // if (i === 0) {
+                return (<BigStream key={`vid_${i}`} video={stream} />)
+            // } else {
+            //     return (<SmallStream key={`vid_${i}`} video={video} />)
+            // }
+        });
 
         return (<>
             <h1>Giveth Video's</h1>
             <div>{vids}</div>
+            <h1>Giveth Streams</h1>
+            <div>{streams}</div>
         </>)
 
 

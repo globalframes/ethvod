@@ -14,27 +14,14 @@ function Comp({ onLoggedin }) {
     const [description, setDescription] = useState();
 
     const createStream = () => {
-        if (!file) return;
-
 
         // // Create an object of formData
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
 
-        // // Update the formData object
-        // formData.append(
-        //     "videoFile",
-        //     file,
-        //     file.name
-        // );
-
-        // // Details of the uploaded file
-        // console.log(file);
-
-        // Request made to the backend api
         // Send formData object
-        // axios.post("http://localhost:9999/stream", formData);
+        axios.post("http://localhost:9999/stream", formData);
 
     }
 

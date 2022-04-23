@@ -84,7 +84,7 @@ const createUploadUrl = async (title) => {
 const uploadVideo = async (url, video) => {
     try {
         const res = await axios.put(url, fs.createReadStream(video.path), {
-            headers: { "Content-Type" : 'video/mp4'}
+            headers: { "Content-Type": 'video/mp4' }
         });
         return res.data;
     } catch (e) {
@@ -127,13 +127,82 @@ const getAssetInfo = async (asset_id) => {
     }
 }
 
+server.get("/streams", async (req, res, next) => {
+
+    const api= "https://livepeer.com/api/stream?streamsonly=1"
+    const streamsResult = await axios.get(api
+        , {
+            headers: {
+                "Authorization": `Bearer ${API_TOKEN}`,
+                // "Content-Type": "application/json"
+            }
+        });
+
+        console.log(streamsResult);
+
+
+});
+
+server.post("/stream", async (req, res, next) => {
+    if (!req.body) {
+        res.send(400, "not enough parameters");
+        return next();
+    } else {
+        var { address, /*signature,*/ title, description } = req.body;
+        const streamConfig = {
+            "name": title,
+            "profiles": [
+                {
+                    "name": "720p",
+                    "bitrate": 2000000,
+                    "fps": 30,
+                    "width": 1280,
+                    "height": 720
+                },
+                {
+                    "name": "480p",
+                    "bitrate": 1000000,
+                    "fps": 30,
+                    "width": 854,
+                    "height": 480
+                },
+                {
+                    "name": "360p",
+                    "bitrate": 500000,
+                    "fps": 30,
+                    "width": 640,
+                    "height": 360
+                }
+            ]
+        }
+        debugger;
+
+        const api = 'https://livepeer.com/api/stream'
+        try {
+            const res = await axios.post(api, streamConfig
+
+                , {
+                    headers: {
+                        "Authorization": `Bearer ${API_TOKEN}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+            console.log(res)
+            return res.data;
+        } catch (e) {
+            console.log(e)
+            return {};
+        }
+    }
+
+});
 
 server.post("/upload", (req, res, next) => {
     if (!req.body) {
         res.send(400, "not enough parameters");
         return next();
     } else {
-        var { address, /*signature,*/ title , token_contract, description } = req.body;
+        var { address, /*signature,*/ title, token_contract, description } = req.body;
         const videofile = req.files.videoFile
 
         if (!title)
@@ -169,7 +238,7 @@ server.post("/upload", (req, res, next) => {
                     console.log("Exported video to ipfs")
                     const data = db.has(address) ? db.get(address) : [];
                     const newRow = {
-                        id : id,
+                        id: id,
                         title: title,
                         description: description,
                         token_contract: token_contract
@@ -201,7 +270,7 @@ server.get("/list/:address", async (req, res) => {
             description: row.description,
             downloadUrl: info.downloadUrl,
             playbackId: info.playbackId,
-            token_contract: token_contract
+            token_contract: row.token_contract
         }
     }))
     res.send(200, result);
@@ -222,7 +291,7 @@ server.get("/thumnail/:id", async (req, res) => {
             console.log(stderr)
         })
     }
-    
+
     fs.readFile(thumbNailPath, function (err, data) {
         if (err) {
             next(err);

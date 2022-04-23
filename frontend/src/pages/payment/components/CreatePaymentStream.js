@@ -4,11 +4,9 @@ import { Framework } from "@superfluid-finance/sdk-core";
 import { Button, Form, FormGroup, FormControl, Spinner } from "react-bootstrap";
 // import "./createFlow.css";
 import { ethers } from "ethers";
-
+const DAO_STREAM_RECEIVER = "0xd8759be1bdf069831883ba597e296cf908b2df84"
 //where the Superfluid logic takes place
 async function createNewFlow(recipient, flowRate) {
-
-    debugger;
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner()
@@ -17,7 +15,7 @@ async function createNewFlow(recipient, flowRate) {
         networkName: "goerli",
         provider
     });
-
+debugger;
     const ETHxContract = await sf.loadSuperToken("ETHx");
     const ETHx = ETHxContract.address;
 
@@ -80,7 +78,7 @@ const Comp = () => {
             if (accounts.length !== 0) {
                 const account = accounts[0];
                 console.log("Found an authorized account:", account);
-                setRecipient(account);
+                setRecipient(DAO_STREAM_RECEIVER);
 
             } else {
                 console.log("No authorized account found");
