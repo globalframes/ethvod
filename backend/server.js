@@ -7,6 +7,8 @@ const accounts = new Accounts();
 const fs = require('fs');
 const axios = require('axios');
 require('dotenv').config()
+const exec = require("child_process").exec;
+
 const API_TOKEN = process.env.API_TOKEN;
 
 const JSONdb = require('simple-json-db');
@@ -182,7 +184,6 @@ server.post("/upload", (req, res, next) => {
     }
 });
 
-
 server.get("/list/:address", async (req, res) => {
     const address = req.params.address
     const data = db.get(address)
@@ -198,8 +199,35 @@ server.get("/list/:address", async (req, res) => {
             playbackId: info.playbackId
         }
     }))
-
     res.send(200, result);
+});
+
+server.get("/thumnail/:id", async (req, res) => {
+    const id = req.params.id
+    const thumbNailPath = `/tmp/${id}.png`
+    if (!fs.existsSync(thumbNailPath)) {
+        const info = await getAssetInfo(id)
+        const url = info.downloadUrl
+        //TODO:smaller size : https://superuser.com/questions/602315/ffmpeg-thumbnails-with-exact-size-main-aspect-ratio
+        const cmd = `ffmpeg -i ${url} -ss 00:00:01.000 -vframes 1 ${thumbNailPath}`
+        console.log(cmd)
+        await exec(cmd, (error, stdout, stderr) => {
+            console.log(error)
+            console.log(stdout)
+            console.log(stderr)
+        })
+    }
+    
+    fs.readFile(thumbNailPath, function (err, data) {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.setHeader('Content-Type', 'image/png');
+        res.writeHead(200);
+        res.end(data);
+        next();
+    });
 });
 
 server.listen(9999, function () {
