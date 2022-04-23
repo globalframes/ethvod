@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.26.1",
+    "dotenv": "^16.0.0",
     "form-data": "^4.0.0",
     "jsonfile": "^6.1.0",
     "restify": "^8.6.0",

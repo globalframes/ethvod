@@ -32,7 +32,7 @@ function Comp({ onLoggedin }) {
 
         // Request made to the backend api
         // Send formData object
-        axios.post("http://localhost:9999/stream", formData);
+        // axios.post("http://localhost:9999/stream", formData);
 
     }
 
