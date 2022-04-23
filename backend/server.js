@@ -113,7 +113,7 @@ server.post("/upload", (req, res, next) => {
         res.send(400, "not enough parameters");
         return next();
     } else {
-        var { address, /*signature,*/ title/*, token_gate_contracts*/ } = req.body;
+        var { address, /*signature,*/ title/*, token_gate_contracts*/, description } = req.body;
         const videofile = req.files.videoFile
 
         if (!title)
@@ -142,24 +142,25 @@ server.post("/upload", (req, res, next) => {
 
             uploadVideo(url, videofile).then(res => {
                 exportToIpfs(id).then(res => {
-                    console.dir(res)
+                    // console.dir(res)
                     //TODO Store result in DB
                     const data = db.has(address) ? db.get(address) : [];
 
                     data.push({
                         id : id,
                         title: title,
-                        token_gate_contracts: token_gate_contracts
+                        description: description
+                        // token_gate_contracts: token_gate_contracts
                     })
 
                     db.set(address, data)
                     db.sync()
 
-                    res.send(200, "TODO");
                 })
             })
         }
         )
+        res.send(200, "TODO");
     }
 });
 
