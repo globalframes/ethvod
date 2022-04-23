@@ -79,34 +79,22 @@ const createUploadUrl = async (title) => {
     }
 }
 
-// const uploadVideo = async (url, video) => {
-//     try {
-
-
-
-//         // const formData = new FormData();
-//         //     formData.append(
-//         //     "videoFile",
-//         //     fs.createReadStream(video.path),
-//         //     video.name
-//         // );
-//         const res = await axios.put(url, fs.createReadStream(video.path), {
-//             headers: { "contentType": file.}
-//         });
-//         // console.log(res)
-//         return res.data;
-//     } catch (e) {
-//         console.log(e)
-//         return {};
-//     }
-
-//     // --data-binary '@$VIDEO_FILE_PATH'
-// }
+const uploadVideo = async (url, video) => {
+    try {
+        const res = await axios.put(url, fs.createReadStream(video.path), {
+            headers: { "Content-Type" : 'video/mp4'}
+        });
+        return res.data;
+    } catch (e) {
+        console.log(e)
+        return {};
+    }
+}
 
 const exportToIpfs = async (asset_id) => {
     try {
-        const url = `https://livepeer.com/api/asset/${asset_id}}/export`
-        const res = await axios.put(url, { ipfs: {} }, {
+        const url = `https://livepeer.com/api/asset/${asset_id}/export`
+        const res = await axios.post(url, { ipfs: {} }, {
             headers: {
                 "Authorization": `Bearer ${API_TOKEN}`,
                 "Content-Type": "application/json"
@@ -145,40 +133,31 @@ server.post("/upload", (req, res, next) => {
         }
 
         // Upload video to LivePeer
-        createUploadUrl(title).then(async res => {
+        createUploadUrl(title).then(res => {
             console.log(res)
             url = res.url
             asset = res.asset
             id = asset.id
             playbackId = asset.playbackId
 
-            debugger;
-            try {
-                const axiosResult = await axios.put(url, videofile, {
-                    headers: { "contentType": videofile.type }
-                });
-            } catch (e) {
-                debugger;
-                console.log(e);
-            }
-            console.dir(res)
-            exportToIpfs(id).then(res => {
+            uploadVideo(url, videofile).then(res => {
+                exportToIpfs(id).then(res => {
+                    console.dir(res)
+                    //TODO Store result in DB
+                    const data = db.has(address) ? db.get(address) : [];
 
-                //TODO Store result in DB
-                const data = db.has(address) ? db.get(address) : [];
+                    data.push({
+                        id : id,
+                        title: title,
+                        token_gate_contracts: token_gate_contracts
+                    })
 
-                data.push({
-                    //ipfs_hash: ...
-                    title: title,
-                    token_gate_contracts: token_gate_contracts
+                    db.set(address, data)
+                    db.sync()
+
+                    res.send(200, "TODO");
                 })
-
-                db.set(address, data)
-                db.sync()
-
-                res.send(200, "TODO");
             })
-
         }
         )
     }
