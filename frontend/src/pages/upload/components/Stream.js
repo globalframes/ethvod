@@ -21,7 +21,7 @@ function Comp({ onLoggedin }) {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
-        
+
         // // Update the formData object
         // formData.append(
         //     "videoFile",
@@ -53,7 +53,7 @@ function Comp({ onLoggedin }) {
                 <div className="field">
                     <label className="label">Description</label>
                     <div className="control">
-                        <textarea class="textarea" placeholder="Stream description" onChange={(e) => { setDescription(e.target.value) }}></textarea>                    </div>
+                        <textarea className="textarea" placeholder="Stream description" onChange={(e) => { setDescription(e.target.value) }}></textarea>                    </div>
                 </div>
 
 

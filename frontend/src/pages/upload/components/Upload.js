@@ -12,6 +12,41 @@ function Comp({ onLoggedin }) {
     const [file, setFile] = useState();
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
+    const [currentAccount, setCurrentAccount] = useState();
+
+
+    const getAddress = async () => {
+        try {
+            const { ethereum } = window;
+
+            if (!ethereum) {
+                console.log("Make sure you have metamask!");
+                return;
+            } else {
+                console.log("We have the ethereum object", ethereum);
+            }
+
+            /*
+            * Check if we're authorized to access the user's wallet
+            */
+            const accounts = await ethereum.request({ method: "eth_accounts" });
+
+            if (accounts.length !== 0) {
+                const account = accounts[0];
+                console.log("Found an authorized account:", account);
+                setCurrentAccount(account);
+            } else {
+                console.log("No authorized account found");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    useEffect(() => {
+        getAddress();
+    }, []);
 
     const uploadFile = () => {
         if (!file) return;
@@ -28,6 +63,7 @@ function Comp({ onLoggedin }) {
         );
         formData.append('title', title);
         formData.append('description', description);
+        formData.append('address', currentAccount);
 
         // Details of the uploaded file
         console.log(file);
@@ -53,7 +89,7 @@ function Comp({ onLoggedin }) {
                 <div className="field">
                     <label className="label">Description</label>
                     <div className="control">
-                        <textarea class="textarea" placeholder="Video description" onChange={(e) => { setDescription(e.target.value) }}></textarea>                    </div>
+                        <textarea className="textarea" placeholder="Video description" onChange={(e) => { setDescription(e.target.value) }}></textarea>                    </div>
                 </div>
 
 
