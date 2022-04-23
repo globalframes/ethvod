@@ -1,5 +1,6 @@
 import React from 'react';
 import Login from "./pages/login";
+import Upload from "./pages/upload";
 import {
     BrowserRouter,
     Routes,
@@ -16,6 +17,12 @@ function App() {
                     <Route
                         path="/"
                         element={(<Login/>)}
+                        // element={props => (<Login {...props} />)}
+                    // render={props => (<Login {...props} />)}
+                    />
+                    <Route
+                        path="/upload"
+                        element={(<Upload/>)}
                         // element={props => (<Login {...props} />)}
                     // render={props => (<Login {...props} />)}
                     />

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 // import 'react-drop-zone/dist/styles.css'
 
 import Welcome from "./components/Welcome";
+import Payment from "./components/Payment";
 
 
 function Login() {
@@ -14,15 +15,20 @@ function Login() {
         payment: 2,
     };
 
-    const [viewstate, setViewstate] = React.useState(VIEWSTATES.welcome);
+    const [viewstate, setViewstate] = React.useState(VIEWSTATES.payment);
 
 
 
     switch (viewstate) {
         case VIEWSTATES.welcome:
-            return (<Welcome onLoggedin={() => {
+            return (<Welcome onLoggedin={ () => {
+                setViewstate(VIEWSTATES.payment);
+            }} />);
+        case VIEWSTATES.payment:
+            return (<Payment onLoggedin={() => {
                 // setViewstate(VIEWSTATES.payment);
-            }} />)
+            }} />);
+
     }
 
 }
