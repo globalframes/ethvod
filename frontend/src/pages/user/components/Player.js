@@ -5,6 +5,7 @@ import 'react-drop-zone/dist/styles.css'
 import styled from 'styled-components'
 // import VideoPlayer from 'react-video-js-player';
 import VideoJS from './VideoJS'
+import useWeb3Modal from "../../../hooks/useWeb3Modal";
 
 const Container = styled.div`
   display: grid;
@@ -15,6 +16,11 @@ const VideoContainer = styled.div`
   grid-gap: 1rem;
   grid-template-columns: repeat(2, 1fr);
 `
+function Comp({ }) {
+    const [provider] = useWeb3Modal();
+    const [videoList, setVideoList] = useState();
+    const [streamList, setStreamList] = useState();
+    const [currentAccount, setCurrentAccount] = useState();
 
 const Title = styled.h1`
   font-size: 26px;
@@ -24,129 +30,52 @@ const Description = styled.h2`
   font-size: 18px;
   text-align: left;
 `
+    React.useEffect(() => {
+        if (!provider || !provider.provider) return;
+        setCurrentAccount(provider.provider.selectedAddress);
+        getVideoList(provider.provider.selectedAddress);
+        provider.provider.on("accountsChanged", (accounts) => {
+            setCurrentAccount(provider.provider.selectedAddress);
+            getVideoList(provider.provider.selectedAddress);
+        });
+    }, [provider]);
 
-function Comp ({}) {
-  const [ready, setReady] = useState(false)
-  const [videoList, setVideoList] = useState()
-  const [streamList, setStreamList] = useState()
 
-  const getAddress = async () => {
-    try {
-      const { ethereum } = window
+    const getVideoList = async (account) => {
+        console.log("get video list", account);
+        axios.get(`http://localhost:9999/list/${account}`).then((res) => {
+            console.log(res.data)
+            setVideoList(res.data);
+        });
 
-      if (!ethereum) {
-        console.log('Make sure you have metamask!')
-        return
-      } else {
-        console.log('We have the ethereum object', ethereum)
-      }
-
-      /*
-       * Check if we're authorized to access the user's wallet
-       */
-      const accounts = await ethereum.request({ method: 'eth_accounts' })
-
-      if (accounts.length !== 0) {
-        const account = accounts[0]
-        console.log('Found an authorized account:', account)
-        // setCurrentAccount(account);
-        getVideoList(account)
-        setReady(true)
-      } else {
-        console.log('No authorized account found')
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const loadData = async () => {
-    await getAddress()
-    // await getVideoList();
-  }
-
-  useEffect(() => {
-    loadData()
-  }, [])
-
-  const getVideoList = async account => {
-    // debugger;
-    axios.get(`http://localhost:9999/list/${account}`).then(res => {
-      setVideoList(res.data)
-    })
-
-    axios.get(`http://localhost:9999/streams`).then(res => {
-      setStreamList(res.data)
-    })
-
-    // setVideoList([])
-  }
-
-  if (!ready) {
-    return <h2 className='subtitle  has-text-white is-4'>loading video's</h2>
-  }
-
-  const BigVid = ({ video }) => {
-    const videoJsOptions = {
-      autoplay: false,
-      controls: true,
-      responsive: true,
-      fluid: true,
-      sources: [
-        {
-          src: video.downloadUrl,
-          type: 'video/mp4'
-        }
-      ]
+        axios.get(`http://localhost:9999/streams`).then((res) => {
+            setStreamList(res.data);
+        });
     }
 
-    return (
-      <VideoContainer>
-        <VideoJS options={videoJsOptions} />
-        <div>
-          <Title>{video.title}</Title>
-          <Description>{video.description}</Description>
-        </div>
-      </VideoContainer>
-    )
-  }
-  const SmallVid = video => {
-    const videoJsOptions = {
-      autoplay: false,
-      controls: true,
-      responsive: true,
-      fluid: true,
-      sources: [
-        {
-          src: video.downloadUrl,
-          type: 'video/mp4'
-        }
-      ]
-    }
+    const BigVid = ({ video }) => {
 
-    return (
-      <>
-        <h4>Small video</h4>
-        <div>Title: {video.title}</div>
-        <div>Description: {video.description}</div>
-        <VideoJS options={videoJsOptions} />
-      </>
-    )
-  }
+        const videoJsOptions = {
+            autoplay: false,
+            controls: true,
+            responsive: true,
+            fluid: true,
+            sources: [{
+                src: video.downloadUrl,
+                type: 'video/mp4'
+            }]
+        };
 
-  const BigStream = ({ stream }) => {
-    const videoJsOptions = {
-      autoplay: false,
-      controls: true,
-      responsive: true,
-      fluid: true,
-      sources: [
-        {
-          src: stream.playbackURL
-          // type: 'video/mp4'
-        }
-      ]
+        return (
+            <>
+                <h1>Big video</h1>
+                <div>Title: {video.title}</div>
+                <div>Description: {video.description}</div>
+                <VideoJS options={videoJsOptions} />
+            </>
+        )
     }
+    const SmallVid = ({ video }) => {
 
     return (
       <>
@@ -166,13 +95,37 @@ function Comp ({}) {
       }
     })
 
-    const streams = streamList
-      ? streamList.map((stream, i) => {
-          // if (i === 0) {
-          return <BigStream key={`stream_${i}`} stream={stream} />
-          // } else {
-          //     return (<SmallStream key={`vid_${i}`} video={video} />)
-          // }
+
+    const BigStream = ({ stream }) => {
+        const videoJsOptions = {
+            autoplay: false,
+            controls: true,
+            responsive: true,
+            fluid: true,
+            sources: [{
+                src: stream.playbackURL,
+                // type: 'video/mp4'
+            }]
+        };
+
+        return (
+            <>
+                <h1>Stream</h1>
+                <div>Title: {stream.title}</div>
+                <VideoJS options={videoJsOptions} />
+            </>
+        )
+    }
+
+
+    if (videoList && streamList) {
+
+        const vids = videoList.map((video, i) => {
+            if (i === 0) {
+                return (<BigVid key={`vid_${i}`} video={video} />)
+            } else {
+                return (<SmallVid key={`vid_${i}`} video={video} />)
+            }
         })
       : []
 
@@ -194,7 +147,22 @@ function Comp ({}) {
     // );
   }
 
-  return <h2 className='subtitle  has-text-white is-4'></h2>
+
+
+        //     // <>
+        //     //     <VideoJS options={videoJsOptions} />
+        //     // </>
+
+
+
+        // );
+    } else {
+        return (
+            <h2 className="subtitle  has-text-white is-4">
+                loading video's
+            </h2>
+        );
+    }
 }
 
 export default Comp

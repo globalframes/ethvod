@@ -105,7 +105,20 @@ function Login ({ onLoggedin }) {
                   Please authenticate by connecting your wallet
                 </h2>
 
-                <br />
+    React.useEffect(() => {
+        if (!provider || !provider.provider) return;
+        setCurrentAccount(provider.provider.selectedAddress);
+        // onLoggedin()
+        debugger;
+        if (provider.provider.selectedAddress) {
+            login(provider.provider.selectedAddress);
+        }
+        provider.provider.on("accountsChanged", (accounts) => {
+            setCurrentAccount(provider.provider.selectedAddress);
+            login(provider.provider.selectedAddress);
+            // login();
+        });
+    }, [provider]);
 
                 {!currentAccount && (
                   <p className='has-text-centered'>
