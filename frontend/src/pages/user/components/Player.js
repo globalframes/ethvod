@@ -36,6 +36,9 @@ function Comp({ }) {
                 const account = accounts[0];
                 console.log("Found an authorized account:", account);
                 setCurrentAccount(account);
+                getVideoList(account);
+                setReady(true);
+
             } else {
                 console.log("No authorized account found");
             }
@@ -46,8 +49,7 @@ function Comp({ }) {
 
     const loadData = async () => {
         await getAddress();
-        await getVideoList();
-        setReady(true);
+        // await getVideoList();
     }
 
 
@@ -56,15 +58,13 @@ function Comp({ }) {
     }, []);
 
 
-    const getVideoList = async () => {
-        // const res = await axios.get(`http://localhost:9999/list/${currentAccount}`);
-        // setVideoList(res.body);
-        setVideoList([])
+    const getVideoList = async (account) => {
+        const res = await axios.get(`http://localhost:9999/list/${account}`);
+
+        setVideoList(res.data);
+        // setVideoList([])
     }
 
-    useEffect(() => {
-        getVideoList();
-    }, []);
 
 
     if (!ready) {
@@ -77,7 +77,7 @@ function Comp({ }) {
 
 
 
-    const BigVid = (video) => {
+    const BigVid = ({video}) => {
 
         const videoJsOptions = {
             autoplay: false,
@@ -89,6 +89,7 @@ function Comp({ }) {
                 type: 'video/mp4'
             }]
         };
+
         return (
             <>
                 <h1>Big video</h1>
@@ -110,6 +111,7 @@ function Comp({ }) {
                 type: 'video/mp4'
             }]
         };
+        debugger;
         return (
             <>
                 <h4>Small video</h4>
@@ -123,15 +125,20 @@ function Comp({ }) {
 
     if (ready && videoList) {
 
-        videoList.map((video, i) => {
+        const vids = videoList.map((video, i) => {
             if (i === 0) {
-                return (<BigVid video={video} />)
+                return (<BigVid key={`vid_${i}`} video={video} />)
             } else {
-                return (<SmallVid video={video} />)
+                return (<SmallVid key={`vid_${i}`} video={video} />)
             }
 
         })
 
+
+        return (<>
+            <h1>Giveth Video's</h1>
+            <div>{vids}</div>
+        </>)
 
 
         // return (

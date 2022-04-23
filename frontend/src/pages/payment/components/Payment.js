@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { StyledDropZone } from 'react-drop-zone'
+import CreatePaymentStream from "./CreatePaymentStream";
+
 import 'react-drop-zone/dist/styles.css'
 
 const DAO_STREAM_RECEIVER = "0xd8759be1bdf069831883ba597e296cf908b2df84"
@@ -80,7 +82,8 @@ function Comp({ onLoggedin }) {
         return (
             <h2 className="subtitle  has-text-white is-4">
                 You need to create a payment stream to use the service
-                {typeof paymentStreamFlowRate} {paymentStreamFlowRate}
+                
+                <CreatePaymentStream recipient={DAO_STREAM_RECEIVER} flowRate="1"/>
             </h2>
         );
     }
