@@ -12,10 +12,6 @@ function Comp({ }) {
     const [ready, setReady] = useState(false);
     const [videoList, setVideoList] = useState();
 
-    const [description, setDescription] = useState();
-    const [currentAccount, setCurrentAccount] = useState();
-
-
     const getAddress = async () => {
         try {
             const { ethereum } = window;
@@ -35,7 +31,7 @@ function Comp({ }) {
             if (accounts.length !== 0) {
                 const account = accounts[0];
                 console.log("Found an authorized account:", account);
-                setCurrentAccount(account);
+                // setCurrentAccount(account);
                 getVideoList(account);
                 setReady(true);
 
@@ -100,7 +96,7 @@ function Comp({ }) {
         )
     }
     const SmallVid = (video) => {
-
+        
         const videoJsOptions = {
             autoplay: false,
             controls: true,
@@ -111,7 +107,7 @@ function Comp({ }) {
                 type: 'video/mp4'
             }]
         };
-        debugger;
+
         return (
             <>
                 <h4>Small video</h4>

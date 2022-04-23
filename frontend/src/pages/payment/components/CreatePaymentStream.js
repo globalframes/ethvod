@@ -7,9 +7,6 @@ import { ethers } from "ethers";
 
 //where the Superfluid logic takes place
 async function createNewFlow(recipient, flowRate) {
-
-    debugger;
-
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner()
 
@@ -137,21 +134,7 @@ const Comp = () => {
 
     return (
         <div>
-            <h2>Create a Flow</h2>
-           <a className="button"
-                onClick={
-                    () => {
-                        debugger;
-                        // setIsButtonLoading(true);
-                        // createNewFlow(recipient, flowRate);
-                        // setTimeout(() => {
-                        //     setIsButtonLoading(false);
-                        // }, 1000);
-                    }
-                }
-            >
-                Subscribe
-            </a>
+            {/* <h2>Create a Flow</h2> */}
             <button className="button is-medium is-link" onClick={(e) => { console.log("quaak");
              createNewFlow(recipient, flowRate); }}>
             Subscribe</button>
