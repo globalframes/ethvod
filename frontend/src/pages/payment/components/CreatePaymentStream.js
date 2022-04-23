@@ -67,9 +67,9 @@ const Comp = () => {
 
     React.useEffect(() => {
         if (!provider || !provider.provider) return;
-        setMintAccount(provider.provider.selectedAddress);
+        setCurrentAccount(provider.provider.selectedAddress);
         provider.provider.on("accountsChanged", (accounts) => {
-            setMintAccount(provider.provider.selectedAddress);
+            setCurrentAccount(provider.provider.selectedAddress);
         });
     }, [provider]);
 
@@ -151,7 +151,7 @@ const Comp = () => {
     return (
         <div>
             <h2>Create a Flow</h2>
-            <span>We will create a stream from { } to {DAO_STREAM_RECEIVER}</span>
+            <span>We will create a stream from {currentAccount} to {DAO_STREAM_RECEIVER}</span>
             <button className="button is-medium is-link" onClick={(e) => {
                 console.log("quaak");
                 createNewFlow(recipient, flowRate);
