@@ -6,6 +6,7 @@ import { StyledDropZone } from 'react-drop-zone'
 import CreatePaymentStream from "./CreatePaymentStream";
 import { Link, Routes, Route, Navigate } from 'react-router-dom'
 import 'react-drop-zone/dist/styles.css'
+import superfluid from "../../../assets/superfluid.png"
 
 const DAO_STREAM_RECEIVER = "0xd8759be1bdf069831883ba597e296cf908b2df84"
 
@@ -96,7 +97,9 @@ function Comp({ onPaymentOK }) {
     return (
 
         <h2 className="subtitle  has-text-white is-4">
+            <img src={superfluid}/><br/>
             Your superfluid stream is running !<br />
+            <a href="https://app.superfluid.finance/dashboard" target="_blank">Superfluid dashboard</a><br/>
             <Link to="/creator">Continue to content creator dashboard</Link>
             {/* <button onClick={onPaymentOK}></button> */}
             {/* Flowrate {paymentStreamFlowRate} */}
