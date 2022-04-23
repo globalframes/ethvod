@@ -9,14 +9,11 @@ const DAO_STREAM_RECEIVER = "0xd8759be1bdf069831883ba597e296cf908b2df84"
 
 
 const Comp = () => {
-
-
+ 
     const [provider] = useWeb3Modal();
-
-
     const [recipient, setRecipient] = useState("");
     const [isButtonLoading, setIsButtonLoading] = useState(false);
-    const [flowRate, setFlowRate] = useState((3 * 10e4).toString());
+    const [flowRate, setFlowRate] = useState((calculateFlowRate(1)).toString());
     const [flowRateDisplay, setFlowRateDisplay] = useState("");
     const [currentAccount, setCurrentAccount] = useState();
 

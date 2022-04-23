@@ -4,61 +4,15 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { StyledDropZone } from 'react-drop-zone'
 import 'react-drop-zone/dist/styles.css'
+import useWeb3Modal from "../../../hooks/useWeb3Modal";
+
 
 function Login({ onLoggedin }) {
     const [currentAccount, setCurrentAccount] = useState("");
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const onSubmit = data => console.log(data);
 
-    const checkIfWalletIsConnected = async () => {
-        try {
-            const { ethereum } = window;
-
-            if (!ethereum) {
-                console.log("Make sure you have metamask!");
-                return;
-            } else {
-                console.log("We have the ethereum object", ethereum);
-            }
-
-            /*
-            * Check if we're authorized to access the user's wallet
-            */
-            const accounts = await ethereum.request({ method: "eth_accounts" });
-
-            if (accounts.length !== 0) {
-                const account = accounts[0];
-                console.log("Found an authorized account:", account);
-                setCurrentAccount(account);
-            } else {
-                console.log("No authorized account found");
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const connectWallet = async () => {
-        try {
-            const { ethereum } = window;
-
-            if (!ethereum) {
-                alert("Get MetaMask!");
-                return;
-            }
-
-            const accounts = await ethereum.request({
-                method: "eth_requestAccounts",
-            });
-
-            console.log("Connected", accounts[0]);
-            setCurrentAccount(accounts[0]);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
+    const [provider] = useWeb3Modal();
 
     const handleSignMessage = async ({ publicAddress, nonce }) => {
 
@@ -77,12 +31,9 @@ function Login({ onLoggedin }) {
             ];
             const bid = [
                 { name: "loginaddress", type: "address" },
-                // { name: "bidder", type: "Identity" },
+
             ];
-            // const identity = [
-            //     { name: "userId", type: "uint256" },
-            //     { name: "wallet", type: "address" },
-            // ];
+
 
             const domainData = {
                 name: "GlobalFrames Sign In",
@@ -92,13 +43,10 @@ function Login({ onLoggedin }) {
                 salt: "0xf2d857f4a3edcb9b78b4d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
             };
             var message = {
-                loginaddress: currentAccount,
-                // bidder: {
-                //     userId: 323,
-                //     wallet: "0x3333333333333333333333333333333333333333"
-                // }
+                loginaddress: publicAddress,
+
             };
-            
+
             const data = JSON.stringify({
                 types: {
                     EIP712Domain: domain,
@@ -113,37 +61,43 @@ function Login({ onLoggedin }) {
             const response = await ethereum.request({
 
                 method: "eth_signTypedData_v3",
-                params: [currentAccount, data],
-                from: currentAccount
+                params: [publicAddress, data],
+                from: publicAddress
             });
             console.log(response);
-
-
-            // const response = await ethereum.request({
-            //     method: 'personal_sign',
-            //     params: [
-            //         `0x${new Buffer(nonce).toString("hex")}`,
-            //         publicAddress,
-            //     ],
-            // });
-            // console.log(response);
 
         }
         catch (e) {
             console.log(e);
+            throw new Error(e);
         }
 
     };
 
-    const login = () => {
-        handleSignMessage({ publicAddress: currentAccount, nonce: "QUAAK" }).then(() => {
+    const login = (publicAddress) => {
+        handleSignMessage({ publicAddress, nonce: Math.floor(Math.random() * 100000 + 10000) }).then(() => {
+
             onLoggedin(currentAccount)
         })
     }
 
-    useEffect(() => {
-        checkIfWalletIsConnected();
-    }, []);
+
+    React.useEffect(() => {
+        if (!provider || !provider.provider) return;
+        setCurrentAccount(provider.provider.selectedAddress);
+        // onLoggedin()
+        debugger;
+        if (provider.provider.selectedAddress) {
+            login(provider.provider.selectedAddress);
+        }
+        provider.provider.on("accountsChanged", (accounts) => {
+            setCurrentAccount(provider.provider.selectedAddress);
+            // login();
+        });
+    }, [provider]);
+
+
+
 
     return (
         <div className="App">
@@ -164,19 +118,21 @@ function Login({ onLoggedin }) {
 
                                 {!currentAccount && (
                                     <p className="has-text-centered">
-                                        <button className="button is-medium is-link" onClick={connectWallet}>
+                                        Please connect to your wallet to sign in
+                                        {/* <button className="button is-medium is-link" onClick={connectWallet}>
                                             connect
-                                        </button>
+                                        </button> */}
                                     </p>
                                 )}
-
-                                {currentAccount}
-
-                                {currentAccount && login() && (
-
-                                    < div > Logging in....</div>
-
-                                )}
+                                {/* 
+                                {currentAccount && (
+                                    <p className="has-text-centered">
+                                        Please sign in
+                                        <button className="button is-medium is-link" onClick={login}>
+                                            Sign In
+                                        </button>
+                                    </p>
+                                )} */}
 
 
                             </div>

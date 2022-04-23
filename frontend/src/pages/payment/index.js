@@ -13,8 +13,8 @@ function Login() {
 
     switch (viewstate) {
         case VIEWSTATES.paymentform:
-            return (<Payment onLoggedin={() => {
-                // setViewstate(VIEWSTATES.payment);
+            return (<Payment onPaymentOK={() => {
+                //  setViewstate(VIEWSTATES.payment);
             }} />);
 
     }

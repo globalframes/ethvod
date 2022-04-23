@@ -22,45 +22,43 @@ const Container = styled.div`
   justify-self: center;
 `
 
-function App () {
-  return (
-    <EthVod className='App'>
-      <Header />
-      <Spacer />
-      <Container>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path='/login'
-              element={<Login />}
-              // element={props => (<Login {...props} />)}
-              // render={props => (<Login {...props} />)}
-            />
-            <Route
-              path='/upload'
-              element={<Upload />}
-              // element={props => (<Login {...props} />)}
-              // render={props => (<Login {...props} />)}
-            />
-            <Route
-              path='/payment'
-              element={<Payment />}
-              // element={props => (<Login {...props} />)}
-              // render={props => (<Login {...props} />)}
-            />
+function App() {
+    return (
+        <EthVod className='App'>
+            <Header />
+            <Spacer />
+            <Container>
+                <BrowserRouter>
+                    <Routes>
+                        <Route
+                            path='/login'
+                            element={<Login />}
+                        />
+                        <Route
+                            path='/upload'
+                            element={<Upload />}
+                        />
+                        <Route
+                            path='/payment'
+                            element={<Payment />}
+                        />
 
-            <Route
-              path='/user'
-              element={<User />}
-              // element={props => (<Login {...props} />)}
-              // render={props => (<Login {...props} />)}
-            />
-            <Route path='*' element={<Navigate to='/login' replace />} />
-          </Routes>
-        </BrowserRouter>
-      </Container>
-    </EthVod>
-  )
+                        <Route
+                            path='/user'
+                            element={<User />}
+                        />
+
+
+                        <Route
+                            path='/creator'
+                            element={<User />}
+                        />
+                        <Route path='*' element={<Navigate to='/login' replace />} />
+                    </Routes>
+                </BrowserRouter>
+            </Container>
+        </EthVod>
+    )
 }
 
 export default App

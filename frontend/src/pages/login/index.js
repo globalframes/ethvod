@@ -16,7 +16,7 @@ function Login() {
         payment: 2,
     };
 
-    const [viewstate, setViewstate] = React.useState(VIEWSTATES.payment);
+    const [viewstate, setViewstate] = React.useState(VIEWSTATES.welcome);
 
 
 
