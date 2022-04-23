@@ -7,7 +7,8 @@ import 'react-drop-zone/dist/styles.css'
 import styled from 'styled-components'
 import VideoJS from './VideoJS'
 import useWeb3Modal from '../../../hooks/useWeb3Modal'
-import { Link, Routes, Route, Navigate } from 'react-router-dom'
+import { Link, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+
 
 const Container = styled.div`
   display: grid;
@@ -148,18 +149,24 @@ function Comp({ }) {
             })
             : []
 
+        const location = useLocation();
+
         return (
             <Container>
-                <Link to="/upload">
-                    <button className="button is-medium">
-                        Upload a video
-                    </button>
-                </Link>
-                <Link to="/upload">
-                    <button className="button is-medium">
-                        Set up a stream
-                    </button>
-                </Link>
+                {location.pathname == "/creator" && (
+                    <>
+                        <Link to="/upload">
+                            <button className="button is-medium">
+                                Upload a video
+                            </button>
+                        </Link>
+                        <Link to="/upload">
+                            <button className="button is-medium">
+                                Set up a stream
+                            </button>
+                        </Link>
+                    </>
+                )}
                 <h1>Your Videos</h1>
                 <div>{vids}</div>
                 <h1>Your Streams</h1>
