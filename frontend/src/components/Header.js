@@ -1,20 +1,30 @@
 import React from 'react'
 import styled from 'styled-components'
 
+const Container = styled.div`
+  transform: rotate(-0.5deg);
+  width: 100vw;
+  height: 60px;
+  background: #ffffff;
+`
+
 const Navbar = styled.div`
+  transform: rotate(0.5deg) translateY(-10px);
+  background: #ffffff;
+  position: fixed;
   width: 100%;
-  padding: 4rem 0;
+  height: 50px;
   z-index: 100;
+  display: grid;
 
   transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   &.HeaderScrolled {
-    background: #ffffff;
     padding: 1rem 0;
     backdrop-filter: blur(20px);
 
     a {
-      color: #faff00;
+      color: black;
     }
   }
 
@@ -35,8 +45,8 @@ const Navbar = styled.div`
 `
 
 const NavGroup = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
+  width: 90%;
+  margin: 1.5rem auto;
   text-align: center;
   display: grid;
   grid-template-columns: repeat(2, auto);
@@ -44,7 +54,16 @@ const NavGroup = styled.div`
   justify-items: center;
 
   a {
-    color: #faff00;
+    justify-self: start;
+    color: black;
+    font-family: 'Orelega One';
+    font-size: 18px;
+  }
+
+  h3 {
+    justify-self: end;
+    color: blue;
+    font-family: 'Orelega One';
   }
 
   img {
@@ -58,12 +77,6 @@ const NavGroup = styled.div`
   }
 `
 
-const HomeLogo = styled.img`
-  @media (max-width: 640px) {
-    width: 20px;
-    height: 20px;
-  }
-`
 let $logocolor = 'purple'
 
 class Header extends React.Component {
@@ -82,7 +95,7 @@ class Header extends React.Component {
       this.setState({ hasScrolled: true })
       $logocolor = 'white'
     } else {
-      this.setState({ hasScrolled: false })
+      this.setState({ hasScrolled: true })
       $logocolor = 'purple'
     }
   }
@@ -97,14 +110,16 @@ class Header extends React.Component {
 
   render () {
     return (
-      <Navbar className={this.state.hasScrolled ? 'HeaderScrolled' : ''}>
-        <NavGroup>
-          <a href='/'>
-            <h3>globalframes</h3>
-          </a>
-          <h3>Connect</h3>
-        </NavGroup>
-      </Navbar>
+      <Container>
+        <Navbar className={this.state.hasScrolled ? 'HeaderScrolled' : ''}>
+          <NavGroup>
+            <a href='/'>globalframes</a>
+            <a href='/'>
+              <h3>Connect</h3>
+            </a>
+          </NavGroup>
+        </Navbar>
+      </Container>
     )
   }
 }

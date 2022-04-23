@@ -15,18 +15,22 @@ $base-col: #202020
 $accent-col-1: #FAFF00
 $accent-col-2: #001AFF
 
+$button-background-color: red
+
 $input-background-color: white
 $input-color: black
 $input-focus-border-color: white
 $input-border-color: rgba(255,255,255,0.5)
 $input-disabled-color: grey
 
-$footer-background-color: #253548
+$label-color: white
+
+$footer-background-color: #202020
 
 $switch-background: rgba(255,255,255,0.1)
 
-$link-col: #aaaaaa
-$link-col-hover: #eeeeee
+$link-col: $accent-col-1
+$link-col-hover: $accent-col-2
 
 @import '~bulma/bulma.sass'
 @import '~bulma-switch/src/sass/index.sass'
@@ -46,6 +50,7 @@ $dottedlinecolor: rgba(0,0,0,0.3)
 
 a
     color: $link-col
+    cursor: pointer
 
 html
   background-color: $base-col
@@ -53,6 +58,9 @@ html
 
 a:hover
     color: $link-col-hover
+
+h2
+  font-family: 'Orelega One', sans-serif
 
 .subtitle
     opacity: .7
@@ -71,13 +79,8 @@ a:hover
     margin-top: 10px
     font-weight: bold
 
-
 .footer .content p
     opacity: .25
-
-
-.buttons
-    margin-top: 10vh
 
 
 .set_setting
@@ -105,7 +108,7 @@ a:hover
     color: white
 
 .table thead th
-    color: #aaaaaa
+    color: $accent-col-1
 
 .pubkeyfield
     word-wrap: break-word
