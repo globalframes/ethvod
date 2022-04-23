@@ -11,7 +11,6 @@ import useWeb3Modal from "../../../hooks/useWeb3Modal";
 
 function Comp({ }) {
     const [provider] = useWeb3Modal();
-    const [ready, setReady] = useState(false);
     const [videoList, setVideoList] = useState();
     const [streamList, setStreamList] = useState();
     const [currentAccount, setCurrentAccount] = useState();
@@ -28,32 +27,16 @@ function Comp({ }) {
 
 
     const getVideoList = async (account) => {
-        // debugger;
+        console.log("get video list", account);
         axios.get(`http://localhost:9999/list/${account}`).then((res) => {
+            console.log(res.data)
             setVideoList(res.data);
         });
 
         axios.get(`http://localhost:9999/streams`).then((res) => {
             setStreamList(res.data);
         });
-
-
-
-
-        // setVideoList([])
     }
-
-
-
-    if (!ready) {
-        return (
-            <h2 className="subtitle  has-text-white is-4">
-                loading video's
-            </h2>
-        );
-    }
-
-
 
     const BigVid = ({ video }) => {
 
@@ -77,7 +60,7 @@ function Comp({ }) {
             </>
         )
     }
-    const SmallVid = (video) => {
+    const SmallVid = ({ video }) => {
 
         const videoJsOptions = {
             autoplay: false,
@@ -123,7 +106,7 @@ function Comp({ }) {
     }
 
 
-    if (ready && videoList && streamList) {
+    if (videoList && streamList) {
 
         const vids = videoList.map((video, i) => {
             if (i === 0) {
@@ -160,17 +143,13 @@ function Comp({ }) {
 
 
         // );
+    } else {
+        return (
+            <h2 className="subtitle  has-text-white is-4">
+                loading video's
+            </h2>
+        );
     }
-
-
-
-
-    return (
-
-        <h2 className="subtitle  has-text-white is-4">
-        </h2>
-
-    );
 }
 
 export default Comp;
