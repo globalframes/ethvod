@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from 'react';
 
-import Upload from "./components/Upload";
-import Stream from "./components/Stream";
-
+import Player from "./components/Player";
 
 function Comp() {
     const VIEWSTATES = {
-        overview: 1,  
+        overview: 1,
     };
 
     const [viewstate, setViewstate] = React.useState(VIEWSTATES.overview);
 
     switch (viewstate) {
-        case VIEWSTATES.showform:
+        case VIEWSTATES.overview:
             return (
-            <>
-                        <Upload onUploaded={ () => {
-                // setViewstate(VIEWSTATES);
-            }} />
-                        <Stream onStreaming={ () => {
-                // setViewstate(VIEWSTATES);
-            }} />
-            </>
-);
-        
+                <>
+                    <Player />
+                </>
+            );
+
 
     }
 

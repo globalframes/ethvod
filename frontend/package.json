@@ -21,6 +21,7 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "3.1.0",
     "react-tooltip": "^4.2.21",
+    "react-video-js-player": "^1.1.1",
     "restify-cors-middleware": "^1.1.1",
     "sass": "^1.45.0",
     "styled-components": "^5.3.5"

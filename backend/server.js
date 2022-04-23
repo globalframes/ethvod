@@ -7,10 +7,12 @@ const accounts = new Accounts();
 const fs = require('fs');
 const axios = require('axios');
 require('dotenv').config()
+const exec = require("child_process").exec;
+
 const API_TOKEN = process.env.API_TOKEN;
 
 const JSONdb = require('simple-json-db');
-const db = new JSONdb('storage.json');
+const db = new JSONdb('/tmp/storage.json');
 
 console.log("Starting server...");
 console.log(`API token: "${API_TOKEN}"`)
@@ -108,6 +110,24 @@ const exportToIpfs = async (asset_id) => {
     }
 }
 
+
+const getAssetInfo = async (asset_id) => {
+    try {
+        const url = `https://livepeer.com/api/asset/${asset_id}`
+        const res = await axios.get(url, {
+            headers: {
+                "Authorization": `Bearer ${API_TOKEN}`
+            }
+        });
+        console.log(res.data)
+        return res.data;
+    } catch (e) {
+        console.log(e)
+        return {};
+    }
+}
+
+
 server.post("/upload", (req, res, next) => {
     if (!req.body) {
         res.send(400, "not enough parameters");
@@ -164,6 +184,51 @@ server.post("/upload", (req, res, next) => {
     }
 });
 
+server.get("/list/:address", async (req, res) => {
+    const address = req.params.address
+    const data = db.get(address)
+    console.dir(data)
+
+    const result = await Promise.all(data.map(async (row) => {
+        const info = await getAssetInfo(row.id)
+        return {
+            id: row.id,
+            title: row.title,
+            description: row.description,
+            downloadUrl: info.downloadUrl,
+            playbackId: info.playbackId
+        }
+    }))
+    res.send(200, result);
+});
+
+server.get("/thumnail/:id", async (req, res) => {
+    const id = req.params.id
+    const thumbNailPath = `/tmp/${id}.png`
+    if (!fs.existsSync(thumbNailPath)) {
+        const info = await getAssetInfo(id)
+        const url = info.downloadUrl
+        //TODO:smaller size : https://superuser.com/questions/602315/ffmpeg-thumbnails-with-exact-size-main-aspect-ratio
+        const cmd = `ffmpeg -i ${url} -ss 00:00:01.000 -vframes 1 ${thumbNailPath}`
+        console.log(cmd)
+        await exec(cmd, (error, stdout, stderr) => {
+            console.log(error)
+            console.log(stdout)
+            console.log(stderr)
+        })
+    }
+    
+    fs.readFile(thumbNailPath, function (err, data) {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.setHeader('Content-Type', 'image/png');
+        res.writeHead(200);
+        res.end(data);
+        next();
+    });
+});
 
 server.listen(9999, function () {
     console.log("%s listening at %s", server.name, server.url);
