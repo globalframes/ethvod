@@ -7,3 +7,5 @@ run server
 
 check server
 <http://localhost:9999/test>
+
+export API_KEY=<key>
