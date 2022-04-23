@@ -13,6 +13,7 @@
     "jsonfile": "^6.1.0",
     "restify": "^8.6.0",
     "restify-cors-middleware2": "^2.1.2",
+    "simple-json-db": "^2.0.0",
     "web3-eth-accounts": "^1.7.3"
   }
 }
