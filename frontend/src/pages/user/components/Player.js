@@ -182,7 +182,7 @@ function Comp({ }) {
 
         // );
     } else {
-        return <h2 className='subtitle  has-text-white is-4'>loading video's</h2>
+        return <h2 className='subtitle  has-text-white is-4'>loading videos</h2>
     }
 }
 
