@@ -4,151 +4,161 @@ import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import { StyledDropZone } from 'react-drop-zone'
 import 'react-drop-zone/dist/styles.css'
+import { useNavigate } from 'react-router-dom';
 
-function Comp ({ onLoggedin }) {
-  const [ready, setReady] = useState(false)
-  // On file select (from the pop up)
-  const [file, setFile] = useState()
-  const [title, setTitle] = useState()
-  const [description, setDescription] = useState()
-  const [currentAccount, setCurrentAccount] = useState()
-  const [tokenContract, setTokenContract] = useState()
+function Comp({ onLoggedin }) {
+    const [ready, setReady] = useState(false)
+    // On file select (from the pop up)
+    const [file, setFile] = useState()
+    const [title, setTitle] = useState()
+    const [description, setDescription] = useState()
+    const [currentAccount, setCurrentAccount] = useState()
+    const [tokenContract, setTokenContract] = useState()
+    const [isUploading, setIsUploading] = useState(false)
 
-  const getAddress = async () => {
-    try {
-      const { ethereum } = window
+    const navigate = useNavigate();
 
-      if (!ethereum) {
-        console.log('Make sure you have metamask!')
-        return
-      } else {
-        console.log('We have the ethereum object', ethereum)
-      }
+    const getAddress = async () => {
+        try {
+            const { ethereum } = window
 
-      /*
-       * Check if we're authorized to access the user's wallet
-       */
-      const accounts = await ethereum.request({ method: 'eth_accounts' })
+            if (!ethereum) {
+                console.log('Make sure you have metamask!')
+                return
+            } else {
+                console.log('We have the ethereum object', ethereum)
+            }
 
-      if (accounts.length !== 0) {
-        const account = accounts[0]
-        console.log('Found an authorized account:', account)
-        setCurrentAccount(account)
-      } else {
-        console.log('No authorized account found')
-      }
-    } catch (error) {
-      console.log(error)
+            /*
+             * Check if we're authorized to access the user's wallet
+             */
+            const accounts = await ethereum.request({ method: 'eth_accounts' })
+
+            if (accounts.length !== 0) {
+                const account = accounts[0]
+                console.log('Found an authorized account:', account)
+                setCurrentAccount(account)
+            } else {
+                console.log('No authorized account found')
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
-  }
 
-  useEffect(() => {
-    getAddress()
-  }, [])
+    useEffect(() => {
+        getAddress()
+    }, [])
 
-  const uploadFile = () => {
-    if (!file) return
+    const uploadFile = () => {
+        if (!file) return
+        setIsUploading(true)
 
-    // Create an object of formData
-    const formData = new FormData()
+        // Create an object of formData
+        const formData = new FormData()
 
-    // Update the formData object
-    formData.append('videoFile', file, file.name)
-    formData.append('title', title)
-    formData.append('description', description)
-    formData.append('address', currentAccount)
-    formData.append('token_contract', tokenContract)
+        // Update the formData object
+        formData.append('videoFile', file, file.name)
+        formData.append('title', title)
+        formData.append('description', description)
+        formData.append('address', currentAccount)
+        formData.append('token_contract', tokenContract)
 
-    // Details of the uploaded file
-    console.log(file)
+        // Details of the uploaded file
+        console.log(file)
 
-    // Request made to the backend api
-    // Send formData object
-    axios.post('http://localhost:9999/upload', formData)
-  }
+        // Request made to the backend api
+        // Send formData object
+        axios.post('http://localhost:9999/upload', formData).then((res) => {
+            console.log("upload ready", res)
+            setIsUploading(false)
+            navigate("/user")
+        })
+    }
 
-  return (
-    <>
-      <h2 className='subtitle  has-text-white is-4'>Upload a video</h2>
-      <div>
-        <div className='field'>
-          <label className='label'>Title</label>
-          <div className='control'>
-            <input
-              className='input'
-              type='text'
-              placeholder='Video title'
-              name='Title'
-              onChange={e => {
-                setTitle(e.target.value)
-              }}
-            />
-          </div>
-        </div>
-        <div className='field'>
-          <label className='label'>Description</label>
-          <div className='control'>
-            <textarea
-              className='textarea'
-              placeholder='Video description'
-              onChange={e => {
-                setDescription(e.target.value)
-              }}
-            ></textarea>{' '}
-          </div>
-        </div>
+    return (
+        <>
+            <h2 className='subtitle  has-text-white is-4'>Upload a video</h2>
+            <div>
+                <div className='field'>
+                    <label className='label'>Title</label>
+                    <div className='control'>
+                        <input
+                            className='input'
+                            type='text'
+                            placeholder='Video title'
+                            name='Title'
+                            onChange={e => {
+                                setTitle(e.target.value)
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className='field'>
+                    <label className='label'>Description</label>
+                    <div className='control'>
+                        <textarea
+                            className='textarea'
+                            placeholder='Video description'
+                            onChange={e => {
+                                setDescription(e.target.value)
+                            }}
+                        ></textarea>{' '}
+                    </div>
+                </div>
 
-        <div className='file has-name'>
-          <label className='file-label'>
-            <input
-              className='file-input'
-              type='file'
-              onChange={e => {
-                setFile(e.target.files[0])
-              }}
-            />
+                <div className='file has-name'>
+                    <label className='file-label'>
+                        <input
+                            className='file-input'
+                            type='file'
+                            onChange={e => {
+                                setFile(e.target.files[0])
+                            }}
+                        />
 
-            <span className='file-cta'>
-              <span className='file-icon'>
-                <i className='fas fa-upload'></i>
-              </span>
-              <span className='file-label'>Choose a file…</span>
-            </span>
-            {file && <span className='file-name'>{file.name}</span>}
-          </label>
-        </div>
+                        <span className='file-cta'>
+                            <span className='file-icon'>
+                                <i className='fas fa-upload'></i>
+                            </span>
+                            <span className='file-label'>Choose a file…</span>
+                        </span>
+                        {file && <span className='file-name'>{file.name}</span>}
+                    </label>
+                </div>
 
-        <div className='field' style={{ paddingTop: '2rem' }}>
-          <label className='label'>
-            Optional: To allow access only for owners of a specific token, enter
-            the contract address here:
-          </label>
-          <div className='control'>
-            <input
-              className='input'
-              type='text'
-              placeholder='Token Contract address'
-              name='TokenContract'
-              onChange={e => {
-                setTokenContract(e.target.value)
-              }}
-            />
-          </div>
-        </div>
+                <div className='field' style={{ paddingTop: '2rem' }}>
+                    <label className='label'>
+                        Optional: To allow access only for owners of a specific token, enter
+                        the contract address here:
+                    </label>
+                    <div className='control'>
+                        <input
+                            className='input'
+                            type='text'
+                            placeholder='Token Contract address'
+                            name='TokenContract'
+                            onChange={e => {
+                                setTokenContract(e.target.value)
+                            }}
+                        />
+                    </div>
+                </div>
 
-        <div>
-          <button
-            className='button is-medium'
-            onClick={e => {
-              uploadFile()
-            }}
-          >
-            Upload
-          </button>
-        </div>
-      </div>
-    </>
-  )
+                <div>
+                    <button
+                        className={'button is-medium' + (isUploading ? " is-loading" : "")}
+                        disabled={!file}
+                        onClick={e => {
+                            uploadFile()
+                        }}
+                    >
+                        {(isUploading ? "Uploading" : "Upload")}
+                    </button>
+                </div>
+            </div>
+        </>
+    )
 }
 
 export default Comp
