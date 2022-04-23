@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
+// import "./css/style.sass";
+import axios from 'axios'
 import { useForm } from 'react-hook-form'
-import styled from 'styled-components'
+import { StyledDropZone } from 'react-drop-zone'
 import 'react-drop-zone/dist/styles.css'
 import useWeb3Modal from '../../../hooks/useWeb3Modal'
-
-const Globalframes = styled.h1``
 
 function Login ({ onLoggedin }) {
   const [currentAccount, setCurrentAccount] = useState('')
@@ -86,6 +86,7 @@ function Login ({ onLoggedin }) {
     }
     provider.provider.on('accountsChanged', accounts => {
       setCurrentAccount(provider.provider.selectedAddress)
+      login(provider.provider.selectedAddress)
       // login();
     })
   }, [provider])
@@ -97,28 +98,15 @@ function Login ({ onLoggedin }) {
           <div className='container has-text-centered '>
             <div className='columns is-vcentered'>
               <div className='column  is-6 is-offset-1'>
-                <Globalframes className='title has-text-white is-2'>
-                  globalframes
-                </Globalframes>
+                <h1 className='title has-text-white is-2'>
+                  Welcome to GlobalFrames
+                </h1>
                 <br />
                 <h2 className='subtitle  has-text-white is-4'>
                   Please authenticate by connecting your wallet
                 </h2>
 
-    React.useEffect(() => {
-        if (!provider || !provider.provider) return;
-        setCurrentAccount(provider.provider.selectedAddress);
-        // onLoggedin()
-        debugger;
-        if (provider.provider.selectedAddress) {
-            login(provider.provider.selectedAddress);
-        }
-        provider.provider.on("accountsChanged", (accounts) => {
-            setCurrentAccount(provider.provider.selectedAddress);
-            login(provider.provider.selectedAddress);
-            // login();
-        });
-    }, [provider]);
+                <br />
 
                 {!currentAccount && (
                   <p className='has-text-centered'>
