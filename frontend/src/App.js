@@ -12,7 +12,12 @@ import {
 import "./css/style.sass";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
+import styled from 'styled-components'
 
+const EthVod = styled.div`
+  height: 100vh;
+  background-color: black;
+`
 
 
 function App() {
@@ -56,4 +61,4 @@ function App() {
     );
 }
 
-export default App;
+export default App

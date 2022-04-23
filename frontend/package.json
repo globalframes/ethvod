@@ -1,5 +1,5 @@
 {
-  "name": "wizard",
+  "name": "globalframes-ethvod",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -24,7 +24,7 @@
     "react-video-js-player": "^1.1.1",
     "restify-cors-middleware": "^1.1.1",
     "sass": "^1.45.0",
-    "styled-components": "^4.3.2"
+    "styled-components": "^5.3.5"
   },
   "scripts": {
     "start": "react-scripts start",
