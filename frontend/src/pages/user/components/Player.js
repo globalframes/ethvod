@@ -1,155 +1,171 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 // import "./css/style.sass";
-import axios from "axios";
-import { useForm } from "react-hook-form";
+import axios from 'axios'
+import { useForm } from 'react-hook-form'
 import { StyledDropZone } from 'react-drop-zone'
 import 'react-drop-zone/dist/styles.css'
-// import VideoPlayer from 'react-video-js-player';
+import styled from 'styled-components'
 import VideoJS from './VideoJS'
-import useWeb3Modal from "../../../hooks/useWeb3Modal";
+import useWeb3Modal from '../../../hooks/useWeb3Modal'
 
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 3rem;
+`
 
-function Comp({ }) {
-    const [provider] = useWeb3Modal();
-    const [videoList, setVideoList] = useState();
-    const [streamList, setStreamList] = useState();
-    const [currentAccount, setCurrentAccount] = useState();
+const VideoContainer = styled.div`
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+`
+const Title = styled.h1`
+  font-size: 26px;
+  text-align: left;
+  grid-column: 2;
+  grid-row: 1;
+`
+const Description = styled.h2`
+  font-size: 18px;
+  text-align: left;
+  grid-column: 2;
+  grid-row: 1;
+  padding-top: 3rem;
+`
 
-    React.useEffect(() => {
-        if (!provider || !provider.provider) return;
-        setCurrentAccount(provider.provider.selectedAddress);
-        getVideoList(provider.provider.selectedAddress);
-        provider.provider.on("accountsChanged", (accounts) => {
-            setCurrentAccount(provider.provider.selectedAddress);
-            getVideoList(provider.provider.selectedAddress);
-        });
-    }, [provider]);
+function Comp ({}) {
+  const [provider] = useWeb3Modal()
+  const [videoList, setVideoList] = useState()
+  const [streamList, setStreamList] = useState()
+  const [currentAccount, setCurrentAccount] = useState()
 
+  React.useEffect(() => {
+    if (!provider || !provider.provider) return
+    setCurrentAccount(provider.provider.selectedAddress)
+    getVideoList(provider.provider.selectedAddress)
+    provider.provider.on('accountsChanged', accounts => {
+      setCurrentAccount(provider.provider.selectedAddress)
+      getVideoList(provider.provider.selectedAddress)
+    })
+  }, [provider])
 
-    const getVideoList = async (account) => {
-        console.log("get video list", account);
-        axios.get(`http://localhost:9999/list/${account}`).then((res) => {
-            console.log(res.data)
-            setVideoList(res.data);
-        });
+  const getVideoList = async account => {
+    console.log('get video list', account)
+    axios.get(`http://localhost:9999/list/${account}`).then(res => {
+      console.log(res.data)
+      setVideoList(res.data)
+    })
 
-        axios.get(`http://localhost:9999/streams`).then((res) => {
-            setStreamList(res.data);
-        });
+    axios.get(`http://localhost:9999/streams`).then(res => {
+      setStreamList(res.data)
+    })
+  }
+
+  const BigVid = ({ video }) => {
+    const videoJsOptions = {
+      autoplay: false,
+      controls: true,
+      responsive: true,
+      fluid: true,
+      sources: [
+        {
+          src: video.downloadUrl,
+          type: 'video/mp4'
+        }
+      ]
     }
 
-    const BigVid = ({ video }) => {
-
-        const videoJsOptions = {
-            autoplay: false,
-            controls: true,
-            responsive: true,
-            fluid: true,
-            sources: [{
-                src: video.downloadUrl,
-                type: 'video/mp4'
-            }]
-        };
-
-        return (
-            <>
-                <h1>Big video</h1>
-                <div>Title: {video.title}</div>
-                <div>Description: {video.description}</div>
-                <VideoJS options={videoJsOptions} />
-            </>
-        )
-    }
-    const SmallVid = ({ video }) => {
-
-        const videoJsOptions = {
-            autoplay: false,
-            controls: true,
-            responsive: true,
-            fluid: true,
-            sources: [{
-                src: video.downloadUrl,
-                type: 'video/mp4'
-            }]
-        };
-
-        return (
-            <>
-                <h4>Small video</h4>
-                <div>Title: {video.title}</div>
-                <div>Description: {video.description}</div>
-                <VideoJS options={videoJsOptions} />
-            </>
-        )
+    return (
+      <VideoContainer>
+        <Title>{video.title}</Title>
+        <Description>{video.description}</Description>
+        <VideoJS options={videoJsOptions} />
+      </VideoContainer>
+    )
+  }
+  const SmallVid = ({ video }) => {
+    const videoJsOptions = {
+      autoplay: false,
+      controls: true,
+      responsive: true,
+      fluid: true,
+      sources: [
+        {
+          src: video.downloadUrl,
+          type: 'video/mp4'
+        }
+      ]
     }
 
+    return (
+      <VideoContainer>
+        <Title>{video.title}</Title>
+        <Description>{video.description}</Description>
+        <VideoJS options={videoJsOptions} />
+      </VideoContainer>
+    )
+  }
 
-    const BigStream = ({ stream }) => {
-        const videoJsOptions = {
-            autoplay: false,
-            controls: true,
-            responsive: true,
-            fluid: true,
-            sources: [{
-                src: stream.playbackURL,
-                // type: 'video/mp4'
-            }]
-        };
-
-        return (
-            <>
-                <h1>Stream</h1>
-                <div>Title: {stream.title}</div>
-                <VideoJS options={videoJsOptions} />
-            </>
-        )
+  const BigStream = ({ stream }) => {
+    const videoJsOptions = {
+      autoplay: false,
+      controls: true,
+      responsive: true,
+      fluid: true,
+      sources: [
+        {
+          src: stream.playbackURL
+          // type: 'video/mp4'
+        }
+      ]
     }
 
+    return (
+      <VideoContainer>
+        <Title>{stream.title}</Title>
+        <VideoJS options={videoJsOptions} />
+      </VideoContainer>
+    )
+  }
 
-    if (videoList && streamList) {
+  if (videoList && streamList) {
+    const vids = videoList.map((video, i) => {
+      if (i === 0) {
+        return <BigVid key={`vid_${i}`} video={video} />
+      } else {
+        return <SmallVid key={`vid_${i}`} video={video} />
+      }
+    })
 
-        const vids = videoList.map((video, i) => {
-            if (i === 0) {
-                return (<BigVid key={`vid_${i}`} video={video} />)
-            } else {
-                return (<SmallVid key={`vid_${i}`} video={video} />)
-            }
+    const streams = streamList
+      ? streamList.map((stream, i) => {
+          // if (i === 0) {
+          return <BigStream key={`stream_${i}`} stream={stream} />
+          // } else {
+          //     return (<SmallStream key={`vid_${i}`} video={video} />)
+          // }
         })
+      : []
 
-        const streams = streamList ? streamList.map((stream, i) => {
-            // if (i === 0) {
-            return (<BigStream key={`stream_${i}`} stream={stream} />)
-            // } else {
-            //     return (<SmallStream key={`vid_${i}`} video={video} />)
-            // }
-        }) : [];
+    return (
+      <Container>
+        <h1>Your Videos</h1>
+        <div>{vids}</div>
+        <h1>Your Streams</h1>
+        <div>{streams}</div>
+      </Container>
+    )
 
-        return (<>
-            <h1>Giveth Video's</h1>
-            <div>{vids}</div>
-            <h1>Giveth Streams</h1>
-            <div>{streams}</div>
-        </>)
+    // return (
 
+    //     // <>
+    //     //     <VideoJS options={videoJsOptions} />
+    //     // </>
 
-        // return (
-
-
-
-        //     // <>
-        //     //     <VideoJS options={videoJsOptions} />
-        //     // </>
-
-
-
-        // );
-    } else {
-        return (
-            <h2 className="subtitle  has-text-white is-4">
-                loading video's
-            </h2>
-        );
-    }
+    // );
+  } else {
+    return <h2 className='subtitle  has-text-white is-4'>loading video's</h2>
+  }
 }
 
-export default Comp;
+export default Comp
