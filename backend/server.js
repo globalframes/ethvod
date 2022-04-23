@@ -54,7 +54,7 @@ server.get("/subscribed/:address", (req, res) => {
 
 const subscriptionCashFileName = "subscriptions_cache.json"
 const isSubscribed = (address) => {
-    // TODO superfluid
+    // TODO superfluid : check server side
 
     return {
         address: address,
@@ -129,7 +129,7 @@ const getAssetInfo = async (asset_id) => {
 
 server.get("/streams", async (req, res, next) => {
 
-    const api= "https://livepeer.com/api/stream?streamsonly=1"
+    const api = "https://livepeer.com/api/stream?streamsonly=1"
     const streamsResult = await axios.get(api
         , {
             headers: {
@@ -138,9 +138,30 @@ server.get("/streams", async (req, res, next) => {
             }
         });
 
-        console.log(streamsResult);
+    const streams = streamsResult.data ? await Promise.all(streamsResult.data.map(async (stream) => {
+
+// console.log("STREAM",stream)
+
+        // const streamDetail = await axios.get(
+        //     `https://livepeer.com/api/stream/${stream.id}`
+        //     , {
+        //         headers: {
+        //             "Authorization": `Bearer ${API_TOKEN}`,
+        //         }
+        //     });
 
 
+        // console.log("STREAMDETAIL",streamDetail);
+
+        return {
+            playbackURL: `https://livepeercdn.com/hls/${stream.playbackId}/index.m3u8`
+        };
+
+    })) : [];
+
+    console.log(streams);
+
+    res.send(200, streams);
 });
 
 server.post("/stream", async (req, res, next) => {
@@ -202,11 +223,8 @@ server.post("/upload", (req, res, next) => {
         res.send(400, "not enough parameters");
         return next();
     } else {
-        var { address, /*signature,*/ title, token_contract, description } = req.body;
+        const { address, /*signature,*/ title, token_contract, description } = req.body;
         const videofile = req.files.videoFile
-
-        if (!title)
-            title = "placeholdertitl" //TODO
         // Check signature
         // const hash = "\x19Ethereum Signed Message:\n" + CHALLENGE.length + CHALLENGE;
         // const recoveredAddress = accounts.recover(hash, signature).toLowerCase()
@@ -261,7 +279,10 @@ server.post("/upload", (req, res, next) => {
 server.get("/list/:address", async (req, res) => {
     const address = req.params.address
     const data = db.get(address)
-
+    if (!data) {
+        console.log(`ERROR: no videos found for ${address}`)
+        return (res.send(200, []));
+    }
     const result = await Promise.all(data.map(async (row) => {
         const info = await getAssetInfo(row.id)
         return {

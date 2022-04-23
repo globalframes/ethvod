@@ -4,36 +4,50 @@ import { Framework } from "@superfluid-finance/sdk-core";
 import { Button, Form, FormGroup, FormControl, Spinner } from "react-bootstrap";
 // import "./createFlow.css";
 import { ethers } from "ethers";
+import useWeb3Modal from "../../../hooks/useWeb3Modal";
 const DAO_STREAM_RECEIVER = "0xd8759be1bdf069831883ba597e296cf908b2df84"
-//where the Superfluid logic takes place
-async function createNewFlow(recipient, flowRate) {
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner()
 
-    const sf = await Framework.create({
-        networkName: "goerli",
-        provider
-    });
-debugger;
-    const ETHxContract = await sf.loadSuperToken("ETHx");
-    const ETHx = ETHxContract.address;
+const Comp = () => {
 
-    try {
-        const createFlowOperation = sf.cfaV1.createFlow({
-            flowRate: flowRate,
-            receiver: recipient,
-            superToken: ETHx
-            // userData?: string
+
+    const [provider] = useWeb3Modal();
+
+
+    const [recipient, setRecipient] = useState("");
+    const [isButtonLoading, setIsButtonLoading] = useState(false);
+    const [flowRate, setFlowRate] = useState((3 * 10e4).toString());
+    const [flowRateDisplay, setFlowRateDisplay] = useState("");
+    const [currentAccount, setCurrentAccount] = useState();
+
+    //where the Superfluid logic takes place
+    async function createNewFlow(recipient, flowRate) {
+        // const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner()
+
+        const sf = await Framework.create({
+            networkName: "goerli",
+            provider
         });
 
-        console.log("Creating your stream...");
+        const ETHxContract = await sf.loadSuperToken("ETHx");
+        const ETHx = ETHxContract.address;
 
-        const result = await createFlowOperation.exec(signer);
-        console.log(result);
+        try {
+            const createFlowOperation = sf.cfaV1.createFlow({
+                flowRate: flowRate,
+                receiver: recipient,
+                superToken: ETHx
+                // userData?: string
+            });
 
-        console.log(
-            `Congrats - you've just created a money stream!
+            console.log("Creating your stream...");
+
+            const result = await createFlowOperation.exec(signer);
+            console.log(result);
+
+            console.log(
+                `Congrats - you've just created a money stream!
     View Your Stream At: https://app.superfluid.finance/dashboard/${recipient}
     Network: Kovan
     Super Token: DAIx
@@ -41,24 +55,25 @@ debugger;
     Receiver: ${recipient},
     FlowRate: ${flowRate}
     `
-        );
-    } catch (error) {
-        console.log(
-            "Hmmm, your transaction threw an error. Make sure that this stream does not already exist, and that you've entered a valid Ethereum address!"
-        );
-        console.error(error);
+            );
+        } catch (error) {
+            console.log(
+                "Hmmm, your transaction threw an error. Make sure that this stream does not already exist, and that you've entered a valid Ethereum address!"
+            );
+            console.error(error);
+        }
     }
-}
-
-const Comp = () => {
-    const [recipient, setRecipient] = useState("");
-    const [isButtonLoading, setIsButtonLoading] = useState(false);
-    const [flowRate, setFlowRate] = useState((3 * 10e4).toString());
-    const [flowRateDisplay, setFlowRateDisplay] = useState("");
 
 
+    React.useEffect(() => {
+        if (!provider || !provider.provider) return;
+        setMintAccount(provider.provider.selectedAddress);
+        provider.provider.on("accountsChanged", (accounts) => {
+            setMintAccount(provider.provider.selectedAddress);
+        });
+    }, [provider]);
 
-    const [currentAccount, setCurrentAccount] = useState();
+
     const getAddress = async () => {
         try {
             const { ethereum } = window;
@@ -136,23 +151,12 @@ const Comp = () => {
     return (
         <div>
             <h2>Create a Flow</h2>
-           <a className="button"
-                onClick={
-                    () => {
-                        debugger;
-                        // setIsButtonLoading(true);
-                        // createNewFlow(recipient, flowRate);
-                        // setTimeout(() => {
-                        //     setIsButtonLoading(false);
-                        // }, 1000);
-                    }
-                }
-            >
-                Subscribe
-            </a>
-            <button className="button is-medium is-link" onClick={(e) => { console.log("quaak");
-             createNewFlow(recipient, flowRate); }}>
-            Subscribe</button>
+            <span>We will create a stream from { } to {DAO_STREAM_RECEIVER}</span>
+            <button className="button is-medium is-link" onClick={(e) => {
+                console.log("quaak");
+                createNewFlow(recipient, flowRate);
+            }}>
+                Subscribe</button>
         </div>
     );
 };

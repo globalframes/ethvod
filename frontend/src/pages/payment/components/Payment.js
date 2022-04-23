@@ -81,7 +81,9 @@ function Comp({ onLoggedin }) {
     if (ready && !paymentStreamFlowRate && paymentStreamFlowRate === 0) {
         return (
             <h2 className="subtitle  has-text-white is-4">
-                You need to create a payment stream to use the service
+                You need a subscription to use this service.
+
+                Set up
                 
                 <CreatePaymentStream recipient={DAO_STREAM_RECEIVER} flowRate="1"/>
             </h2>
