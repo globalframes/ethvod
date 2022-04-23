@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-// import "./css/style.sass";
-// import axios from "axios";
-// import { useForm } from "react-hook-form";
-// import { StyledDropZone } from 'react-drop-zone'
-// import 'react-drop-zone/dist/styles.css'
+import styled from 'styled-components'
 
 import Upload from './components/Upload'
 import Stream from './components/Stream'
+
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  grid-gap: 30px;
+`
 
 function Comp () {
   const VIEWSTATES = {
@@ -18,7 +20,7 @@ function Comp () {
   switch (viewstate) {
     case VIEWSTATES.showform:
       return (
-        <>
+        <Container>
           <Upload
             onUploaded={() => {
               // setViewstate(VIEWSTATES);
@@ -29,7 +31,7 @@ function Comp () {
               // setViewstate(VIEWSTATES);
             }}
           />
-        </>
+        </Container>
       )
   }
 }

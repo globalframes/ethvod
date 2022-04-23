@@ -118,9 +118,10 @@ function Comp ({ onLoggedin }) {
           </label>
         </div>
 
-        <div className='field'>
+        <div className='field' style={{ paddingTop: '2rem' }}>
           <label className='label'>
-            Token Contract, for token gated access to the video
+            Optional: To allow access only for owners of a specific token, enter
+            the contract address here:
           </label>
           <div className='control'>
             <input
@@ -137,12 +138,12 @@ function Comp ({ onLoggedin }) {
 
         <div>
           <button
-            className='button is-medium is-link'
+            className='button is-medium'
             onClick={e => {
               uploadFile()
             }}
           >
-            Upload!
+            Upload
           </button>
         </div>
       </div>
