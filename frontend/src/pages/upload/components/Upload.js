@@ -72,7 +72,7 @@ function Comp({ onLoggedin }) {
         axios.post('http://localhost:9999/upload', formData).then((res) => {
             console.log("upload ready", res)
             setIsUploading(false)
-            navigate("/user")
+            navigate("/creator")
         })
     }
 
