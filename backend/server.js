@@ -2,6 +2,7 @@ const restify = require("restify");
 const corsMiddleware = require("restify-cors-middleware2");
 const jsonfile = require('jsonfile')
 const Accounts = require('web3-eth-accounts');
+const FormData = require('form-data')
 const accounts = new Accounts();
 const fs = require('fs');
 const axios = require('axios');
@@ -79,10 +80,14 @@ const createUploadUrl = async (title) => {
 
 const uploadVideo = async (url, video) => {
     try {
-        const res = await axios.put(url, video, {
-            headers: {
-                "Content-Type": "video/mp4"
-            }
+        const formData = new FormData();
+            formData.append(
+            "videoFile",
+            fs.createReadStream(video.path),
+            video.name
+        );
+        const res = await axios.put(url, fs.createReadStream(video.path), {
+            headers: { "contentType" : 'application/octet-stream'}
         });
         // console.log(res)
         return res.data;
@@ -116,15 +121,19 @@ server.post("/upload", (req, res, next) => {
         res.send(400, "not enough parameters");
         return next();
     } else {
-        const { address, signature, title, videofile, token_gate_contracts } = req.body;
+        var { address, /*signature,*/ title/*, token_gate_contracts*/ } = req.body;
+        const videofile = req.files.videoFile
 
+        if (!title)
+            title = "placeholdertitl" //TODO
         // Check signature
-        const hash = "\x19Ethereum Signed Message:\n" + CHALLENGE.length + CHALLENGE;
-        const recoveredAddress = accounts.recover(hash, signature).toLowerCase()
-        const originalAddress = address.toLowerCase();
-        if (recoveredAddress !== originalAddress) {
-            //TODO: return res.send(403, "invalid signature");
-        }
+        // const hash = "\x19Ethereum Signed Message:\n" + CHALLENGE.length + CHALLENGE;
+        // const recoveredAddress = accounts.recover(hash, signature).toLowerCase()
+        // const originalAddress = address.toLowerCase();
+        // if (recoveredAddress !== originalAddress) {
+        //     //TODO: return res.send(403, "invalid signature");
+        // }
+        recoveredAddress = address
 
         // Check subscription
         if (!isSubscribed(recoveredAddress)) {
@@ -140,7 +149,7 @@ server.post("/upload", (req, res, next) => {
             playbackId = asset.playbackId
 
             uploadVideo(url, videofile).then(res => {
-                const id = res.asset.id
+                console.dir(res)
                 exportToIpfs(id).then(res => {
 
                     //TODO Store result in DB
