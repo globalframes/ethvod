@@ -11,15 +11,17 @@ function Comp({ onLoggedin }) {
     // On file select (from the pop up)
     const [file, setFile] = useState();
     const [title, setTitle] = useState();
-
+    const [description, setDescription] = useState();
 
     const createStream = () => {
         if (!file) return;
 
 
         // // Create an object of formData
-        // const formData = new FormData();
-
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        
         // // Update the formData object
         // formData.append(
         //     "videoFile",
@@ -47,6 +49,11 @@ function Comp({ onLoggedin }) {
                     <div className="control">
                         <input className="input" type="text" placeholder="Stream title" name="Title" onChange={(e) => { setTitle(e.target.value); }} />
                     </div>
+                </div>
+                <div className="field">
+                    <label className="label">Description</label>
+                    <div className="control">
+                        <textarea class="textarea" placeholder="Stream description" onChange={(e) => { setDescription(e.target.value) }}></textarea>                    </div>
                 </div>
 
 

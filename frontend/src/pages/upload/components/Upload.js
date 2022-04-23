@@ -11,7 +11,7 @@ function Comp({ onLoggedin }) {
     // On file select (from the pop up)
     const [file, setFile] = useState();
     const [title, setTitle] = useState();
-
+    const [description, setDescription] = useState();
 
     const uploadFile = () => {
         if (!file) return;
@@ -26,6 +26,8 @@ function Comp({ onLoggedin }) {
             file,
             file.name
         );
+        formData.append('title', title);
+        formData.append('description', description);
 
         // Details of the uploaded file
         console.log(file);
@@ -47,6 +49,11 @@ function Comp({ onLoggedin }) {
                     <div className="control">
                         <input className="input" type="text" placeholder="Video title" name="Title" onChange={(e) => { setTitle(e.target.value); }} />
                     </div>
+                </div>
+                <div className="field">
+                    <label className="label">Description</label>
+                    <div className="control">
+                        <textarea class="textarea" placeholder="Video description" onChange={(e) => { setDescription(e.target.value) }}></textarea>                    </div>
                 </div>
 
 
@@ -80,6 +87,10 @@ function Comp({ onLoggedin }) {
                 </div>
 
             </div>
+
+
+
+
         </>
     );
 
