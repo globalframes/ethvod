@@ -13,6 +13,8 @@ function Comp({ onLoggedin }) {
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
     const [currentAccount, setCurrentAccount] = useState();
+    const [tokenContract, setTokenContract] = useState();
+
 
 
     const getAddress = async () => {
@@ -64,6 +66,7 @@ function Comp({ onLoggedin }) {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('address', currentAccount);
+        formData.append('token_contract', tokenContract);
 
         // Details of the uploaded file
         console.log(file);
@@ -114,7 +117,12 @@ function Comp({ onLoggedin }) {
                     </label>
                 </div>
 
-
+                <div className="field">
+                    <label className="label">Token Contract, for token gated access to the video</label>
+                    <div className="control">
+                        <input className="input" type="text" placeholder="Token Contract address" name="TokenContract" onChange={(e) => { setTokenContract(e.target.value); }} />
+                    </div>
+                </div>
 
                 <div>
                     <button className="button is-medium is-link" onClick={(e) => { uploadFile() }}>
