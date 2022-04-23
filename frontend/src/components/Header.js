@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import useWeb3Modal from "../hooks/useWeb3Modal";
 
 const Container = styled.div`
   transform: rotate(-0.5deg);
@@ -80,49 +81,84 @@ const NavGroup = styled.div`
 
 let $logocolor = 'purple'
 
-class Header extends React.Component {
-  constructor (props) {
-    super(props)
-    this.handleScroll = this.handleScroll.bind(this)
-    this.state = {
-      hasScrolled: false
-    }
-  }
+const Header = (props) => {
+  // constructor (props) {
+  //   super(props)
+  //   this.handleScroll = this.handleScroll.bind(this)
+  //   this.state = {
+  //     hasScrolled: false
+  //   }
+  // }
+  const [hasScrolled, setHasScrolled] = useState(false);
 
-  handleScroll = event => {
+  const handleScroll = event => {
     const scrollTop = window.pageYOffset
 
     if (scrollTop > 50) {
-      this.setState({ hasScrolled: true })
+      setHasScrolled(true);
       $logocolor = 'white'
     } else {
-      this.setState({ hasScrolled: true })
+      setHasScrolled(true);
       $logocolor = 'purple'
     }
   }
 
-  componentDidMount () {
-    window.addEventListener('scroll', this.handleScroll)
-  }
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll)
+    return (() => {
+      window.removeEventListener('scroll', handleScroll)
+    })
+  }, []);
 
-  componentWillUnmount () {
-    window.removeEventListener('scroll', this.handleScroll)
-  }
 
-  render () {
+  const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
+
+
+
+  function DisconnectWalletButton({ provider, logoutOfWeb3Modal }) {
+    if (!provider) {
+      return (
+        <button
+          // className="button is-success is-outlined is-medium"
+          onClick={async () => {
+            loadWeb3Modal();
+          }}
+        >
+          Connect Wallet
+        </button>
+      )
+    };
     return (
-      <Container>
-        <Navbar className={this.state.hasScrolled ? 'HeaderScrolled' : ''}>
-          <NavGroup>
-            <a href='/'>globalframes</a>
-            <a href='/' className='connect'>
-              Connect
-            </a>
-          </NavGroup>
-        </Navbar>
-      </Container>
+      <>
+        <span className="connect">{provider.provider.selectedAddress}</span>
+        <button
+          // className="button is-success is-outlined is-medium"
+          onClick={async () => {
+            logoutOfWeb3Modal();
+          }}
+        >
+          Disconnect Wallet
+        </button >
+      </>
     )
   }
+
+
+  return (
+    <Container>
+      <Navbar className={hasScrolled ? 'HeaderScrolled' : ''}>
+        <NavGroup>
+          <a href='/'>globalframes</a>
+          {/* <a href='/' className='connect'>
+              Connect
+            </a> */}
+          <DisconnectWalletButton className='connect' provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
+
+        </NavGroup>
+      </Navbar>
+    </Container>
+  )
+
 }
 
 export default Header

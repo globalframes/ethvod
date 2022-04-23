@@ -55,7 +55,7 @@ function Comp({ }) {
     }, []);
 
     const getVideoList = async (account) => {
-        debugger;
+        // debugger;
         axios.get(`http://localhost:9999/list/${account}`).then((res) => {
             setVideoList(res.data);
         });
@@ -105,7 +105,7 @@ function Comp({ }) {
         )
     }
     const SmallVid = (video) => {
-        
+
         const videoJsOptions = {
             autoplay: false,
             controls: true,
@@ -129,15 +129,14 @@ function Comp({ }) {
 
 
     const BigStream = ({ stream }) => {
-
         const videoJsOptions = {
             autoplay: false,
             controls: true,
             responsive: true,
             fluid: true,
             sources: [{
-                src: stream.downloadUrl,
-                type: 'video/mp4'
+                src: stream.playbackURL,
+                // type: 'video/mp4'
             }]
         };
 
@@ -151,7 +150,7 @@ function Comp({ }) {
     }
 
 
-    if (ready && videoList) {
+    if (ready && videoList && streamList) {
 
         const vids = videoList.map((video, i) => {
             if (i === 0) {
@@ -161,13 +160,13 @@ function Comp({ }) {
             }
         })
 
-        const streams = streamList.map((stream, i) => {
+        const streams = streamList ? streamList.map((stream, i) => {
             // if (i === 0) {
-                return (<BigStream key={`vid_${i}`} video={stream} />)
+            return (<BigStream key={`stream_${i}`} stream={stream} />)
             // } else {
             //     return (<SmallStream key={`vid_${i}`} video={video} />)
             // }
-        });
+        }) : [];
 
         return (<>
             <h1>Giveth Video's</h1>
