@@ -116,7 +116,7 @@ const Header = props => {
     if (!provider) {
       return (
         <button
-          // className="button is-success is-outlined is-medium"
+          className='button '
           onClick={async () => {
             loadWeb3Modal()
           }}
@@ -129,14 +129,14 @@ const Header = props => {
       <>
         <span className='connect'>
           <button
-            // className="button is-success is-outlined is-medium"
+            className='button'
             onClick={async () => {
               logoutOfWeb3Modal()
             }}
           >
             Disconnect
           </button>
-          {provider.provider.selectedAddress}
+          {' ' + provider.provider.selectedAddress}
         </span>
       </>
     )
