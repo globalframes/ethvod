@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import useWeb3Modal from "../hooks/useWeb3Modal";
+import useWeb3Modal from '../hooks/useWeb3Modal'
 
 const Container = styled.div`
   transform: rotate(-0.5deg);
@@ -81,7 +81,7 @@ const NavGroup = styled.div`
 
 let $logocolor = 'purple'
 
-const Header = (props) => {
+const Header = props => {
   // constructor (props) {
   //   super(props)
   //   this.handleScroll = this.handleScroll.bind(this)
@@ -89,60 +89,58 @@ const Header = (props) => {
   //     hasScrolled: false
   //   }
   // }
-  const [hasScrolled, setHasScrolled] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false)
 
   const handleScroll = event => {
     const scrollTop = window.pageYOffset
 
     if (scrollTop > 50) {
-      setHasScrolled(true);
+      setHasScrolled(true)
       $logocolor = 'white'
     } else {
-      setHasScrolled(true);
+      setHasScrolled(true)
       $logocolor = 'purple'
     }
   }
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll)
-    return (() => {
+    return () => {
       window.removeEventListener('scroll', handleScroll)
-    })
-  }, []);
+    }
+  }, [])
 
+  const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal()
 
-  const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
-
-
-
-  function DisconnectWalletButton({ provider, logoutOfWeb3Modal }) {
+  function DisconnectWalletButton ({ provider, logoutOfWeb3Modal }) {
     if (!provider) {
       return (
         <button
           // className="button is-success is-outlined is-medium"
           onClick={async () => {
-            loadWeb3Modal();
+            loadWeb3Modal()
           }}
         >
           Connect Wallet
         </button>
       )
-    };
+    }
     return (
       <>
-        <span className="connect">{provider.provider.selectedAddress}</span>
-        <button
-          // className="button is-success is-outlined is-medium"
-          onClick={async () => {
-            logoutOfWeb3Modal();
-          }}
-        >
-          Disconnect Wallet
-        </button >
+        <span className='connect'>
+          <button
+            // className="button is-success is-outlined is-medium"
+            onClick={async () => {
+              logoutOfWeb3Modal()
+            }}
+          >
+            Disconnect
+          </button>
+          {provider.provider.selectedAddress}
+        </span>
       </>
     )
   }
-
 
   return (
     <Container>
@@ -152,13 +150,16 @@ const Header = (props) => {
           {/* <a href='/' className='connect'>
               Connect
             </a> */}
-          <DisconnectWalletButton className='connect' provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
-
+          <DisconnectWalletButton
+            className='connect'
+            provider={provider}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+          />
         </NavGroup>
       </Navbar>
     </Container>
   )
-
 }
 
 export default Header
