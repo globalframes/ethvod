@@ -7,6 +7,8 @@ const accounts = new Accounts();
 const fs = require('fs');
 const axios = require('axios');
 require('dotenv').config()
+const exec = require("child_process").exec;
+
 const API_TOKEN = process.env.API_TOKEN;
 
 const JSONdb = require('simple-json-db');
@@ -86,7 +88,7 @@ const uploadVideo = async (url, video) => {
         });
         return res.data;
     } catch (e) {
-        console.log(e)
+        console.log("Error uploading video", e)
         return {};
     }
 }
@@ -103,7 +105,7 @@ const exportToIpfs = async (asset_id) => {
         // console.log(res)
         return res.data;
     } catch (e) {
-        console.log(e)
+        console.log("Error exporting to IPFS", e)
         return {};
     }
 }
@@ -117,7 +119,7 @@ const getAssetInfo = async (asset_id) => {
                 "Authorization": `Bearer ${API_TOKEN}`
             }
         });
-        console.log(res.data)
+        // console.log(res.data)
         return res.data;
     } catch (e) {
         console.log(e)
@@ -131,7 +133,7 @@ server.post("/upload", (req, res, next) => {
         res.send(400, "not enough parameters");
         return next();
     } else {
-        var { address, /*signature,*/ title/*, token_gate_contracts*/, description } = req.body;
+        var { address, /*signature,*/ title , token_contract, description } = req.body;
         const videofile = req.files.videoFile
 
         if (!title)
@@ -150,26 +152,31 @@ server.post("/upload", (req, res, next) => {
             //TODO: return res.send(403, "missing subscription");
         }
 
+        console.log("Starting upload")
+
         // Upload video to LivePeer
         createUploadUrl(title).then(res => {
-            console.log(res)
+            console.log("Upload url:", res.url)
             url = res.url
             asset = res.asset
             id = asset.id
             playbackId = asset.playbackId
 
             uploadVideo(url, videofile).then(res => {
-                exportToIpfs(id).then(res => {
-                    // console.dir(res)
-                    //TODO Store result in DB
-                    const data = db.has(address) ? db.get(address) : [];
+                console.log("Uploaded video")
 
-                    data.push({
+                exportToIpfs(id).then(res => {
+                    console.log("Exported video to ipfs")
+                    const data = db.has(address) ? db.get(address) : [];
+                    const newRow = {
                         id : id,
                         title: title,
-                        description: description
-                        // token_gate_contracts: token_gate_contracts
-                    })
+                        description: description,
+                        token_contract: token_contract
+                    }
+                    data.push(newRow)
+
+                    console.log("Stored", newRow)
 
                     db.set(address, data)
                     db.sync()
@@ -182,11 +189,9 @@ server.post("/upload", (req, res, next) => {
     }
 });
 
-
 server.get("/list/:address", async (req, res) => {
     const address = req.params.address
     const data = db.get(address)
-    console.dir(data)
 
     const result = await Promise.all(data.map(async (row) => {
         const info = await getAssetInfo(row.id)
@@ -195,11 +200,39 @@ server.get("/list/:address", async (req, res) => {
             title: row.title,
             description: row.description,
             downloadUrl: info.downloadUrl,
-            playbackId: info.playbackId
+            playbackId: info.playbackId,
+            token_contract: token_contract
         }
     }))
-
     res.send(200, result);
+});
+
+server.get("/thumnail/:id", async (req, res) => {
+    const id = req.params.id
+    const thumbNailPath = `/tmp/${id}.png`
+    if (!fs.existsSync(thumbNailPath)) {
+        const info = await getAssetInfo(id)
+        const url = info.downloadUrl
+        //TODO:smaller size : https://superuser.com/questions/602315/ffmpeg-thumbnails-with-exact-size-main-aspect-ratio
+        const cmd = `ffmpeg -i ${url} -ss 00:00:01.000 -vframes 1 ${thumbNailPath}`
+        console.log(cmd)
+        await exec(cmd, (error, stdout, stderr) => {
+            console.log(error)
+            console.log(stdout)
+            console.log(stderr)
+        })
+    }
+    
+    fs.readFile(thumbNailPath, function (err, data) {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.setHeader('Content-Type', 'image/png');
+        res.writeHead(200);
+        res.end(data);
+        next();
+    });
 });
 
 server.listen(9999, function () {
