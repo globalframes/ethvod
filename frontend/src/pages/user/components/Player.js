@@ -40,6 +40,9 @@ function Comp({ }) {
     const [videoList, setVideoList] = useState()
     const [streamList, setStreamList] = useState()
     const [currentAccount, setCurrentAccount] = useState()
+    const [showUploadButtons, setShowUploadButtons] = useState()
+    
+    const location = useLocation();
 
     React.useEffect(() => {
         if (!provider || !provider.provider) return
@@ -50,6 +53,13 @@ function Comp({ }) {
             getVideoList(provider.provider.selectedAddress)
         })
     }, [provider])
+
+
+
+    React.useEffect(() => {
+        setShowUploadButtons(location.pathname == "/creator")
+    }, [location])
+
 
     const getVideoList = async account => {
         console.log('get video list', account)
@@ -149,11 +159,9 @@ function Comp({ }) {
             })
             : []
 
-        const location = useLocation();
-
         return (
             <Container>
-                {location.pathname == "/creator" && (
+                {showUploadButtons && (
                     <>
                         <Link to="/upload">
                             <button className="button is-medium">
