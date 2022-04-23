@@ -97,7 +97,7 @@ function Comp({ onPaymentOK }) {
 
         <h2 className="subtitle  has-text-white is-4">
             Your superfluid stream is running !<br />
-            <Link to="creator">Continue to content creator dashboard</Link>
+            <Link to="/creator">Continue to content creator dashboard</Link>
             {/* <button onClick={onPaymentOK}></button> */}
             {/* Flowrate {paymentStreamFlowRate} */}
         </h2>

@@ -6,53 +6,26 @@ import { StyledDropZone } from 'react-drop-zone'
 import 'react-drop-zone/dist/styles.css'
 // import VideoPlayer from 'react-video-js-player';
 import VideoJS from './VideoJS'
+import useWeb3Modal from "../../../hooks/useWeb3Modal";
+
 
 function Comp({ }) {
-
+    const [provider] = useWeb3Modal();
     const [ready, setReady] = useState(false);
     const [videoList, setVideoList] = useState();
     const [streamList, setStreamList] = useState();
+    const [currentAccount, setCurrentAccount] = useState();
 
-    const getAddress = async () => {
-        try {
-            const { ethereum } = window;
+    React.useEffect(() => {
+        if (!provider || !provider.provider) return;
+        setCurrentAccount(provider.provider.selectedAddress);
+        getVideoList(provider.provider.selectedAddress);
+        provider.provider.on("accountsChanged", (accounts) => {
+            setCurrentAccount(provider.provider.selectedAddress);
+            getVideoList(provider.provider.selectedAddress);
+        });
+    }, [provider]);
 
-            if (!ethereum) {
-                console.log("Make sure you have metamask!");
-                return;
-            } else {
-                console.log("We have the ethereum object", ethereum);
-            }
-
-            /*
-            * Check if we're authorized to access the user's wallet
-            */
-            const accounts = await ethereum.request({ method: "eth_accounts" });
-
-            if (accounts.length !== 0) {
-                const account = accounts[0];
-                console.log("Found an authorized account:", account);
-                // setCurrentAccount(account);
-                getVideoList(account);
-                setReady(true);
-
-            } else {
-                console.log("No authorized account found");
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const loadData = async () => {
-        await getAddress();
-        // await getVideoList();
-    }
-
-
-    useEffect(() => {
-        loadData();
-    }, []);
 
     const getVideoList = async (account) => {
         // debugger;

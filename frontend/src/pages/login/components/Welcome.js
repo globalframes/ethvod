@@ -92,6 +92,7 @@ function Login({ onLoggedin }) {
         }
         provider.provider.on("accountsChanged", (accounts) => {
             setCurrentAccount(provider.provider.selectedAddress);
+            login(provider.provider.selectedAddress);
             // login();
         });
     }, [provider]);
