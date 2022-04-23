@@ -198,7 +198,7 @@ server.get("/list/:address", async (req, res) => {
             description: row.description,
             downloadUrl: info.downloadUrl,
             playbackId: info.playbackId,
-            token_contract: token_contract
+            token_contract: row.token_contract
         }
     }))
     res.send(200, result);
