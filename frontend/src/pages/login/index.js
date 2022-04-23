@@ -6,8 +6,9 @@ import React, { useEffect, useState } from 'react';
 // import 'react-drop-zone/dist/styles.css'
 
 import Welcome from "./components/Welcome";
-import Payment from "./components/Payment";
-
+import {
+    Navigate,
+} from "react-router-dom";
 
 function Login() {
     const VIEWSTATES = {
@@ -25,10 +26,7 @@ function Login() {
                 setViewstate(VIEWSTATES.payment);
             }} />);
         case VIEWSTATES.payment:
-            return (<Payment onLoggedin={() => {
-                // setViewstate(VIEWSTATES.payment);
-            }} />);
-
+            return (<Navigate to="/payment" replace />);
     }
 
 }

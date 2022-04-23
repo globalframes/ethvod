@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 // import 'react-drop-zone/dist/styles.css'
 
 import Upload from "./components/Upload";
+import Stream from "./components/Stream";
 
 
 function Comp() {
@@ -20,9 +21,16 @@ function Comp() {
 
     switch (viewstate) {
         case VIEWSTATES.showform:
-            return (<Upload onLoggedin={ () => {
+            return (
+            <>
+                        <Upload onUploaded={ () => {
                 // setViewstate(VIEWSTATES);
-            }} />);
+            }} />
+                        <Stream onStreaming={ () => {
+                // setViewstate(VIEWSTATES);
+            }} />
+            </>
+);
         
 
     }
