@@ -45,7 +45,7 @@ function Comp({ onLoggedin }) {
 
 
                 <div>
-                    <button className="button is-medium is-link" onClick={(e) => { createStream() }}>
+                    <button className="button is-medium" onClick={(e) => { createStream() }}>
                         Start streaming!
                     </button>
                 </div>
