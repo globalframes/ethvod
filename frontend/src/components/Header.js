@@ -4,6 +4,7 @@ import styled from 'styled-components'
 const Container = styled.div`
   transform: rotate(-0.5deg);
   width: 100vw;
+  margin: 0 auto;
   height: 60px;
   background: #ffffff;
 `
@@ -14,6 +15,7 @@ const Navbar = styled.div`
   position: fixed;
   width: 100%;
   height: 50px;
+  margin: 0 auto;
   z-index: 100;
   display: grid;
 
@@ -60,12 +62,6 @@ const NavGroup = styled.div`
     font-size: 18px;
   }
 
-  h3 {
-    justify-self: end;
-    color: blue;
-    font-family: 'Orelega One';
-  }
-
   img {
     margin: auto;
   }
@@ -74,6 +70,11 @@ const NavGroup = styled.div`
     padding: 1rem 0.5rem;
     justify-self: center;
     margin: 0;
+  }
+
+  .connect {
+    color: blue;
+    justify-self: end;
   }
 `
 
@@ -114,8 +115,8 @@ class Header extends React.Component {
         <Navbar className={this.state.hasScrolled ? 'HeaderScrolled' : ''}>
           <NavGroup>
             <a href='/'>globalframes</a>
-            <a href='/'>
-              <h3>Connect</h3>
+            <a href='/' className='connect'>
+              Connect
             </a>
           </NavGroup>
         </Navbar>
