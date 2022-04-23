@@ -54,7 +54,7 @@ server.get("/subscribed/:address", (req, res) => {
 
 const subscriptionCashFileName = "subscriptions_cache.json"
 const isSubscribed = (address) => {
-    // TODO superfluid
+    // TODO superfluid : check server side
 
     return {
         address: address,
@@ -133,11 +133,8 @@ server.post("/upload", (req, res, next) => {
         res.send(400, "not enough parameters");
         return next();
     } else {
-        var { address, /*signature,*/ title , token_contract, description } = req.body;
+        const { address, /*signature,*/ title , token_contract, description } = req.body;
         const videofile = req.files.videoFile
-
-        if (!title)
-            title = "placeholdertitl" //TODO
         // Check signature
         // const hash = "\x19Ethereum Signed Message:\n" + CHALLENGE.length + CHALLENGE;
         // const recoveredAddress = accounts.recover(hash, signature).toLowerCase()
