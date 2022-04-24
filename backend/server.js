@@ -84,7 +84,9 @@ const createUploadUrl = async (title) => {
 const uploadVideo = async (url, video) => {
     try {
         const res = await axios.put(url, fs.createReadStream(video.path), {
-            headers: { "Content-Type": 'video/mp4' }
+            headers: { "Content-Type": 'video/mp4' },
+            'maxContentLength': Infinity,
+            'maxBodyLength': Infinity
         });
         return res.data;
     } catch (e) {
@@ -140,7 +142,7 @@ server.get("/streams", async (req, res, next) => {
 
     const streams = streamsResult.data ? await Promise.all(streamsResult.data.map(async (stream) => {
 
-// console.log("STREAM",stream)
+        // console.log("STREAM",stream)
 
         // const streamDetail = await axios.get(
         //     `https://livepeer.com/api/stream/${stream.id}`

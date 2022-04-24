@@ -83,7 +83,7 @@ function Comp ({ onPaymentOK }) {
   if (ready && !paymentStreamFlowRate && paymentStreamFlowRate === 0) {
     return (
       <h2 className='subtitle  has-text-white is-4'>
-        You need a subscription to use this service. Set up
+        You need a streaming subscription to use this service.<br/> Let's get this set up
         <CreatePaymentStream recipient={DAO_STREAM_RECEIVER} flowRate='1' />
       </h2>
     )

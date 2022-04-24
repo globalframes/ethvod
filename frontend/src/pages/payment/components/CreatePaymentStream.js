@@ -5,15 +5,16 @@ import { Button, Form, FormGroup, FormControl, Spinner } from "react-bootstrap";
 // import "./createFlow.css";
 import { ethers } from "ethers";
 import useWeb3Modal from "../../../hooks/useWeb3Modal";
+import superfluid from '../../../assets/superfluid.png'
+
 const DAO_STREAM_RECEIVER = "0xd8759be1bdf069831883ba597e296cf908b2df84"
 
-
 const Comp = () => {
- 
+
     const [provider] = useWeb3Modal();
     const [recipient, setRecipient] = useState("");
     const [isButtonLoading, setIsButtonLoading] = useState(false);
-    const [flowRate, setFlowRate] = useState((calculateFlowRate(1)).toString());
+    const [flowRate, setFlowRate] = useState("3000000000000");
     const [flowRateDisplay, setFlowRateDisplay] = useState("");
     const [currentAccount, setCurrentAccount] = useState();
 
@@ -147,8 +148,11 @@ const Comp = () => {
 
     return (
         <div>
-            <h2>Create a Flow</h2>
-            <span>We will create a stream from {currentAccount} to {DAO_STREAM_RECEIVER}</span>
+            <br />
+            <img src={superfluid} width={'150px'} style={{ placeSelf: 'center' }} />
+            <br/>
+            <span>We will create a stream from {currentAccount} to {DAO_STREAM_RECEIVER} for 20 DAI per month</span>
+            <br />
             <button className="button is-medium is-link" onClick={(e) => {
                 console.log("quaak");
                 createNewFlow(recipient, flowRate);
