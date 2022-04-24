@@ -8,6 +8,8 @@ import styled from 'styled-components'
 import VideoJS from './VideoJS'
 import useWeb3Modal from '../../../hooks/useWeb3Modal'
 import { Link, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import ERC721ABI from "../../../assets/ERC721-ABI.json";
+import { Contract } from 'ethers';
 
 
 const Container = styled.div`
@@ -41,7 +43,7 @@ function Comp({ }) {
     const [streamList, setStreamList] = useState()
     const [currentAccount, setCurrentAccount] = useState()
     const [showUploadButtons, setShowUploadButtons] = useState()
-    
+
     const location = useLocation();
 
     React.useEffect(() => {
@@ -55,6 +57,24 @@ function Comp({ }) {
     }, [provider])
 
 
+    React.useEffect(() => {
+        getVideoList()
+    },[]);
+
+    const getBalance = async (tokenAddress) => {
+        if (!provider || !provider.provider || !provider.provider.selectedAddress){
+            return 0;
+        }
+        const contract = new Contract(tokenAddress, ERC721ABI, provider);
+        try {
+            const balance = await contract.balanceOf(provider.provider.selectedAddress);
+            return balance.toString();
+        } catch (e) {
+            debugger;
+            console.log(e)
+        }
+    };
+
 
     React.useEffect(() => {
         setShowUploadButtons(location.pathname == "/creator")
@@ -63,9 +83,23 @@ function Comp({ }) {
 
     const getVideoList = async account => {
         console.log('get video list', account)
-        axios.get(`http://localhost:9999/list/${account}`).then(res => {
+        const channel = "0xd8759be1bdf069831883ba597e296cf908b2df84"
+        axios.get(`http://localhost:9999/list/${channel}`).then(async res => {
             console.log(res.data)
-            setVideoList(res.data)
+
+            const vids = await Promise.all(res.data.map(async (v) => {
+                let b = 0;
+                if (v.token_contract) {
+                    console.log("This video is tokengated by", v.token_contract);
+                    b = await getBalance(v.token_contract);
+                    console.log("balance=", b);
+                }
+// debugger;
+                return {...v,locked: b === 0};
+            }))
+
+
+            setVideoList(vids)
         })
 
         axios.get(`http://localhost:9999/streams`).then(res => {
@@ -73,6 +107,17 @@ function Comp({ }) {
         })
     }
 
+    const LockedVid = ({ video }) => {
+      
+
+        return (
+            <VideoContainer>
+                <Title>{video.title}</Title>
+                <Description>This video is only available to LPT token holders. Please connect your wallet to unlock this content.</Description>
+                <VideoJS />
+            </VideoContainer>
+        )
+    }
     const BigVid = ({ video }) => {
         const videoJsOptions = {
             autoplay: false,
@@ -142,8 +187,12 @@ function Comp({ }) {
 
     if (videoList && streamList) {
         const vids = videoList.map((video, i) => {
+            // debugger;
+            if (video.locked){
+                return <LockedVid key={`vid_${i}`} video={video}/>
+            }
             if (i === 0) {
-                return <BigVid key={`vid_${i}`} video={video} />
+                return <BigVid key={`vid_${i}`} video={video} tokengateaddress={video.token_contract} />
             } else {
                 return <SmallVid key={`vid_${i}`} video={video} />
             }
